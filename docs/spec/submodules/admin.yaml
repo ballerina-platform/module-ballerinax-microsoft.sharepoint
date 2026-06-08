@@ -1,0 +1,468 @@
+openapi: 3.0.4
+info:
+  title: Microsoft Graph — SharePoint Admin
+  description: SharePoint subset of the Microsoft Graph v1.0 OpenAPI specification (generated from graphexplorer.yaml).
+  version: v1.0
+  x-ms-generated-by:
+    toolName: Microsoft.OpenApi.OData
+    toolVersion: 0.0.0.0
+servers:
+- url: https://graph.microsoft.com/v1.0
+tags:
+- name: admin.sharepoint
+  x-ms-docs-toc-type: page
+paths:
+  /admin/sharepoint:
+    description: Provides operations to manage the sharepoint property of the microsoft.graph.admin entity.
+    get:
+      tags:
+      - admin.sharepoint
+      summary: Get sharepoint from admin
+      operationId: admin.GetSharepoint
+      parameters:
+      - name: $select
+        in: query
+        description: Select properties to be returned
+        style: form
+        explode: false
+        schema:
+          uniqueItems: true
+          type: array
+          items:
+            enum:
+            - id
+            - settings
+            type: string
+      - name: $expand
+        in: query
+        description: Expand related entities
+        style: form
+        explode: false
+        schema:
+          uniqueItems: true
+          type: array
+          items:
+            enum:
+            - '*'
+            - settings
+            type: string
+      responses:
+        '200':
+          description: Retrieved navigation property
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/microsoft.graph.sharepoint'
+        default:
+          $ref: '#/components/responses/error'
+      x-ms-docs-operation-type: operation
+    patch:
+      tags:
+      - admin.sharepoint
+      summary: Update the navigation property sharepoint in admin
+      operationId: admin.UpdateSharepoint
+      requestBody:
+        description: New navigation property values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/microsoft.graph.sharepoint'
+        required: true
+      responses:
+        '204':
+          description: Success
+        default:
+          $ref: '#/components/responses/error'
+      x-ms-docs-operation-type: operation
+    delete:
+      tags:
+      - admin.sharepoint
+      summary: Delete navigation property sharepoint for admin
+      operationId: admin.DeleteSharepoint
+      parameters:
+      - name: If-Match
+        in: header
+        description: ETag
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Success
+        default:
+          $ref: '#/components/responses/error'
+      x-ms-docs-operation-type: operation
+  /admin/sharepoint/settings:
+    description: Provides operations to manage the settings property of the microsoft.graph.sharepoint entity.
+    get:
+      tags:
+      - admin.sharepoint
+      summary: Get settings
+      description: Get the tenant-level settings for SharePoint and OneDrive.
+      externalDocs:
+        description: Find more info here
+        url: https://learn.microsoft.com/graph/api/sharepointsettings-get?view=graph-rest-1.0
+      operationId: admin.sharepoint.GetSettings
+      parameters:
+      - name: $select
+        in: query
+        description: Select properties to be returned
+        style: form
+        explode: false
+        schema:
+          uniqueItems: true
+          type: array
+          items:
+            enum:
+            - id
+            - allowedDomainGuidsForSyncApp
+            - availableManagedPathsForSiteCreation
+            - deletedUserPersonalSiteRetentionPeriodInDays
+            - excludedFileExtensionsForSyncApp
+            - idleSessionSignOut
+            - imageTaggingOption
+            - isCommentingOnSitePagesEnabled
+            - isFileActivityNotificationEnabled
+            - isLegacyAuthProtocolsEnabled
+            - isLoopEnabled
+            - isMacSyncAppEnabled
+            - isRequireAcceptingUserToMatchInvitedUserEnabled
+            - isResharingByExternalUsersEnabled
+            - isSharePointMobileNotificationEnabled
+            - isSharePointNewsfeedEnabled
+            - isSiteCreationEnabled
+            - isSiteCreationUIEnabled
+            - isSitePagesCreationEnabled
+            - isSitesStorageLimitAutomatic
+            - isSyncButtonHiddenOnPersonalSite
+            - isUnmanagedSyncAppForTenantRestricted
+            - personalSiteDefaultStorageLimitInMB
+            - sharingAllowedDomainList
+            - sharingBlockedDomainList
+            - sharingCapability
+            - sharingDomainRestrictionMode
+            - siteCreationDefaultManagedPath
+            - siteCreationDefaultStorageLimitInMB
+            - tenantDefaultTimezone
+            type: string
+      - name: $expand
+        in: query
+        description: Expand related entities
+        style: form
+        explode: false
+        schema:
+          uniqueItems: true
+          type: array
+          items:
+            enum:
+            - '*'
+            type: string
+      responses:
+        '200':
+          description: Retrieved navigation property
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/microsoft.graph.sharepointSettings'
+        default:
+          $ref: '#/components/responses/error'
+      x-ms-docs-operation-type: operation
+    patch:
+      tags:
+      - admin.sharepoint
+      summary: Update settings
+      description: Update one or more tenant-level settings for SharePoint and OneDrive.
+      externalDocs:
+        description: Find more info here
+        url: https://learn.microsoft.com/graph/api/sharepointsettings-update?view=graph-rest-1.0
+      operationId: admin.sharepoint.UpdateSettings
+      requestBody:
+        description: New navigation property values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/microsoft.graph.sharepointSettings'
+        required: true
+      responses:
+        '204':
+          description: Success
+        default:
+          $ref: '#/components/responses/error'
+      x-ms-docs-operation-type: operation
+    delete:
+      tags:
+      - admin.sharepoint
+      summary: Delete navigation property settings for admin
+      operationId: admin.sharepoint.DeleteSettings
+      parameters:
+      - name: If-Match
+        in: header
+        description: ETag
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Success
+        default:
+          $ref: '#/components/responses/error'
+      x-ms-docs-operation-type: operation
+components:
+  schemas:
+    microsoft.graph.entity:
+      title: entity
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier for an entity. Read-only.
+    microsoft.graph.sharepoint:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.entity'
+      - title: sharepoint
+        type: object
+        properties:
+          settings:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.sharepointSettings'
+            - type: object
+              nullable: true
+            x-ms-navigationProperty: true
+    microsoft.graph.sharepointSettings:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.entity'
+      - title: sharepointSettings
+        type: object
+        properties:
+          allowedDomainGuidsForSyncApp:
+            type: array
+            items:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              format: uuid
+              nullable: true
+            description: Collection of trusted domain GUIDs for the OneDrive sync app.
+          availableManagedPathsForSiteCreation:
+            type: array
+            items:
+              type: string
+            description: Collection of managed paths available for site creation. Read-only.
+          deletedUserPersonalSiteRetentionPeriodInDays:
+            maximum: 2147483647
+            minimum: -2147483648
+            type: number
+            description: The number of days for preserving a deleted user's OneDrive.
+            format: int32
+            nullable: true
+          excludedFileExtensionsForSyncApp:
+            type: array
+            items:
+              type: string
+              nullable: true
+            description: Collection of file extensions not uploaded by the OneDrive sync app.
+          idleSessionSignOut:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.idleSessionSignOut'
+            - type: object
+              nullable: true
+            description: Specifies the idle session sign-out policies for the tenant.
+          imageTaggingOption:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.imageTaggingChoice'
+            - type: object
+              nullable: true
+            description: 'Specifies the image tagging option for the tenant. The possible values are: disabled, basic, enhanced.'
+          isCommentingOnSitePagesEnabled:
+            type: boolean
+            description: Indicates whether comments are allowed on modern site pages in SharePoint.
+            nullable: true
+          isFileActivityNotificationEnabled:
+            type: boolean
+            description: Indicates whether push notifications are enabled for OneDrive events.
+            nullable: true
+          isLegacyAuthProtocolsEnabled:
+            type: boolean
+            description: Indicates whether legacy authentication protocols are enabled for the tenant.
+            nullable: true
+          isLoopEnabled:
+            type: boolean
+            description: Indicates whether if Fluid Framework is allowed on SharePoint sites.
+            nullable: true
+          isMacSyncAppEnabled:
+            type: boolean
+            description: Indicates whether files can be synced using the OneDrive sync app for Mac.
+            nullable: true
+          isRequireAcceptingUserToMatchInvitedUserEnabled:
+            type: boolean
+            description: Indicates whether guests must sign in using the same account to which sharing invitations are sent.
+            nullable: true
+          isResharingByExternalUsersEnabled:
+            type: boolean
+            description: Indicates whether guests are allowed to reshare files, folders, and sites they don't own.
+            nullable: true
+          isSharePointMobileNotificationEnabled:
+            type: boolean
+            description: Indicates whether mobile push notifications are enabled for SharePoint.
+            nullable: true
+          isSharePointNewsfeedEnabled:
+            type: boolean
+            description: Indicates whether the newsfeed is allowed on the modern site pages in SharePoint.
+            nullable: true
+          isSiteCreationEnabled:
+            type: boolean
+            description: Indicates whether users are allowed to create sites.
+            nullable: true
+          isSiteCreationUIEnabled:
+            type: boolean
+            description: Indicates whether the UI commands for creating sites are shown.
+            nullable: true
+          isSitePagesCreationEnabled:
+            type: boolean
+            description: Indicates whether creating new modern pages is allowed on SharePoint sites.
+            nullable: true
+          isSitesStorageLimitAutomatic:
+            type: boolean
+            description: Indicates whether site storage space is automatically managed or if specific storage limits are set per site.
+            nullable: true
+          isSyncButtonHiddenOnPersonalSite:
+            type: boolean
+            description: Indicates whether the sync button in OneDrive is hidden.
+            nullable: true
+          isUnmanagedSyncAppForTenantRestricted:
+            type: boolean
+            description: Indicates whether users are allowed to sync files only on PCs joined to specific domains.
+            nullable: true
+          personalSiteDefaultStorageLimitInMB:
+            type: number
+            description: The default OneDrive storage limit for all new and existing users who are assigned a qualifying license. Measured in megabytes (MB).
+            format: int64
+            nullable: true
+          sharingAllowedDomainList:
+            type: array
+            items:
+              type: string
+              nullable: true
+            description: Collection of email domains that are allowed for sharing outside the organization.
+          sharingBlockedDomainList:
+            type: array
+            items:
+              type: string
+              nullable: true
+            description: Collection of email domains that are blocked for sharing outside the organization.
+          sharingCapability:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.sharingCapabilities'
+            - type: object
+              nullable: true
+            description: 'Sharing capability for the tenant. The possible values are: disabled, externalUserSharingOnly, externalUserAndGuestSharing, existingExternalUserSharingOnly.'
+          sharingDomainRestrictionMode:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.sharingDomainRestrictionMode'
+            - type: object
+              nullable: true
+            description: 'Specifies the external sharing mode for domains. The possible values are: none, allowList, blockList.'
+          siteCreationDefaultManagedPath:
+            type: string
+            description: The value of the team site managed path. This is the path under which new team sites will be created.
+          siteCreationDefaultStorageLimitInMB:
+            maximum: 2147483647
+            minimum: -2147483648
+            type: number
+            description: The default storage quota for a new site upon creation. Measured in megabytes (MB).
+            format: int32
+            nullable: true
+          tenantDefaultTimezone:
+            type: string
+            description: The default timezone of a tenant for newly created sites. For a list of possible values, see SPRegionalSettings.TimeZones property.
+            nullable: true
+    microsoft.graph.idleSessionSignOut:
+      title: idleSessionSignOut
+      type: object
+      properties:
+        isEnabled:
+          type: boolean
+          description: Indicates whether the idle session sign-out policy is enabled.
+          nullable: true
+        signOutAfterInSeconds:
+          type: number
+          description: Number of seconds of inactivity after which a user is signed out.
+          format: int64
+          nullable: true
+        warnAfterInSeconds:
+          type: number
+          description: Number of seconds of inactivity after which a user is notified that they'll be signed out.
+          format: int64
+          nullable: true
+    microsoft.graph.imageTaggingChoice:
+      title: imageTaggingChoice
+      enum:
+      - disabled
+      - basic
+      - enhanced
+      - unknownFutureValue
+      type: string
+    microsoft.graph.sharingCapabilities:
+      title: sharingCapabilities
+      enum:
+      - disabled
+      - externalUserSharingOnly
+      - externalUserAndGuestSharing
+      - existingExternalUserSharingOnly
+      - unknownFutureValue
+      type: string
+    microsoft.graph.sharingDomainRestrictionMode:
+      title: sharingDomainRestrictionMode
+      enum:
+      - none
+      - allowList
+      - blockList
+      - unknownFutureValue
+      type: string
+    microsoft.graph.ODataErrors.ODataError:
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/microsoft.graph.ODataErrors.MainError'
+    microsoft.graph.ODataErrors.MainError:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+          x-ms-primary-error-message: true
+        target:
+          type: string
+          nullable: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/microsoft.graph.ODataErrors.ErrorDetails'
+        innerError:
+          $ref: '#/components/schemas/microsoft.graph.ODataErrors.InnerError'
+    microsoft.graph.ODataErrors.ErrorDetails:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        target:
+          type: string
+          nullable: true
+    microsoft.graph.ODataErrors.InnerError:
+      type: object
+      description: The structure of this object is service-specific
+  responses:
+    error:
+      description: error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/microsoft.graph.ODataErrors.ODataError'
