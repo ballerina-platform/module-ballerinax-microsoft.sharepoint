@@ -8,6 +8,10 @@ info:
     toolVersion: 0.0.0.0
 servers:
 - url: https://graph.microsoft.com/v1.0
+security:
+- azureOAuth2:
+  - Notes.Read.All
+  - Notes.ReadWrite.All
 tags:
 - name: sites.onenote
   x-ms-docs-toc-type: page
@@ -10070,3 +10074,25 @@ components:
       explode: false
       schema:
         type: string
+  securitySchemes:
+    azureOAuth2:
+      type: oauth2
+      description: OAuth 2.0 authorization using Azure Active Directory (Microsoft Entra ID). Supports both delegated and application permissions for accessing SharePoint resources via the Microsoft Graph API.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
+          tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
+          scopes:
+            Notes.Read: Read user OneNote notebooks
+            Notes.ReadWrite: Read and write user OneNote notebooks
+            Notes.Read.All: Read all OneNote notebooks the signed-in user can access
+            Notes.ReadWrite.All: Read and write all OneNote notebooks the signed-in user can access
+            Notes.Create: Create OneNote notebooks
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
+          scopes:
+            Notes.Read: Read user OneNote notebooks (application permission)
+            Notes.ReadWrite: Read and write user OneNote notebooks (application permission)
+            Notes.Read.All: Read all OneNote notebooks the signed-in user can access (application permission)
+            Notes.ReadWrite.All: Read and write all OneNote notebooks the signed-in user can access (application permission)
+            Notes.Create: Create OneNote notebooks (application permission)

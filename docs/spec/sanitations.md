@@ -50,7 +50,27 @@ Every emitted spec is verified to have zero dangling `$ref`s before being writte
 - Top-level `tags` are filtered to only those names referenced by the retained operations.
 - All other upstream fields (`openapi`, `info.version`, `info.x-ms-generated-by`, `servers`, path/operation/component contents) are preserved verbatim.
 
-## 5. Reproducibility / OpenAPI CLI commands
+## 5. Security scheme injection
+
+The upstream Microsoft Graph spec ships no `securitySchemes` (Microsoft documents Graph auth out-of-band). For each emitted file the extractor injects an `azureOAuth2` Azure AD OAuth2 scheme (mirroring the style used by `ballerinax/microsoft.outlook.mail`):
+
+- `type: oauth2`, both `authorizationCode` (delegated) and `clientCredentials` (application) flows.
+- `authorizationUrl` = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize`, `tokenUrl` = `https://login.microsoftonline.com/common/oauth2/v2.0/token`.
+- Scopes are tailored per submodule; the same set is listed under both flows, with the application-flow descriptions suffixed with `(application permission)`.
+- A top-level `security: [{azureOAuth2: [...]}]` advertises a representative subset (typically the read + read-write pair) as a sensible default.
+
+Scopes per submodule:
+
+| Submodule | Scopes |
+| --- | --- |
+| `sites`, `lists`, `pages` | `Sites.Read.All`, `Sites.ReadWrite.All`, `Sites.Manage.All`, `Sites.FullControl.All`, `Sites.Selected` |
+| `termstore` | `TermStore.Read.All`, `TermStore.ReadWrite.All` |
+| `onenote` | `Notes.Read`, `Notes.ReadWrite`, `Notes.Read.All`, `Notes.ReadWrite.All`, `Notes.Create` |
+| `embedded` | `FileStorageContainer.Selected` |
+| `admin` | `SharePointTenantSettings.Read.All`, `SharePointTenantSettings.ReadWrite.All` |
+| `sharepoint` (consolidated) | Union of all of the above |
+
+## 6. Reproducibility / OpenAPI CLI commands
 
 Regenerate every spec from the upstream by running this from the repository root:
 

@@ -114,16 +114,128 @@ def in_sharepoint(path: str) -> bool:
     )
 
 
-# (output filename, predicate, info title)
-OUTPUTS: list[tuple[Path, Callable[[str], bool], str]] = [
-    (OUT_DIR / "sharepoint.yaml", in_sharepoint, "Microsoft Graph — SharePoint API"),
-    (SUBMODULE_DIR / "sites.yaml", in_sites_remainder, "Microsoft Graph — SharePoint Sites"),
-    (SUBMODULE_DIR / "lists.yaml", in_lists, "Microsoft Graph — SharePoint Lists"),
-    (SUBMODULE_DIR / "pages.yaml", in_pages, "Microsoft Graph — SharePoint Pages"),
-    (SUBMODULE_DIR / "termstore.yaml", in_termstore, "Microsoft Graph — SharePoint Term Store"),
-    (SUBMODULE_DIR / "onenote.yaml", in_onenote, "Microsoft Graph — SharePoint OneNote"),
-    (SUBMODULE_DIR / "embedded.yaml", in_embedded, "Microsoft Graph — SharePoint Embedded"),
-    (SUBMODULE_DIR / "admin.yaml", in_admin, "Microsoft Graph — SharePoint Admin"),
+# --- Security: Azure AD OAuth2 (Microsoft Entra ID) ---------------------------
+#
+# Microsoft Graph SharePoint endpoints are authorized via Azure AD OAuth2.
+# Each spec exposes a single `azureOAuth2` security scheme with both
+# `authorizationCode` (delegated) and `clientCredentials` (application) flows.
+# Per-submodule we list only the scopes relevant to that submodule's surface.
+
+OAUTH2_AUTH_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize"
+OAUTH2_TOKEN_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+
+# Scope -> human-readable description. App-permission description is the same
+# text suffixed with " (application permission)" to match the outlook.mail style.
+SCOPE_DESCRIPTIONS: dict[str, str] = {
+    # Site / list / page / content type / column / permission scopes
+    "Sites.Read.All": "Read items in all site collections",
+    "Sites.ReadWrite.All": "Read and write items in all site collections",
+    "Sites.Manage.All": "Create, edit, and delete items and lists in all site collections",
+    "Sites.FullControl.All": "Have full control of all site collections",
+    "Sites.Selected": "Access selected site collections only",
+    # Term store / taxonomy
+    "TermStore.Read.All": "Read managed metadata in SharePoint",
+    "TermStore.ReadWrite.All": "Read and write managed metadata in SharePoint",
+    # OneNote (on SharePoint sites)
+    "Notes.Read": "Read user OneNote notebooks",
+    "Notes.ReadWrite": "Read and write user OneNote notebooks",
+    "Notes.Read.All": "Read all OneNote notebooks the signed-in user can access",
+    "Notes.ReadWrite.All": "Read and write all OneNote notebooks the signed-in user can access",
+    "Notes.Create": "Create OneNote notebooks",
+    # SharePoint Embedded
+    "FileStorageContainer.Selected": "Access selected file storage containers",
+    # Tenant SharePoint admin
+    "SharePointTenantSettings.Read.All": "Read SharePoint and OneDrive tenant settings",
+    "SharePointTenantSettings.ReadWrite.All": "Read and change SharePoint and OneDrive tenant settings",
+}
+
+# Full scope list per submodule. The first entry is the consolidated spec.
+SITE_BASE_SCOPES = [
+    "Sites.Read.All",
+    "Sites.ReadWrite.All",
+    "Sites.Manage.All",
+    "Sites.FullControl.All",
+    "Sites.Selected",
+]
+TERMSTORE_SCOPES = ["TermStore.Read.All", "TermStore.ReadWrite.All"]
+ONENOTE_SCOPES = [
+    "Notes.Read",
+    "Notes.ReadWrite",
+    "Notes.Read.All",
+    "Notes.ReadWrite.All",
+    "Notes.Create",
+]
+EMBEDDED_SCOPES = ["FileStorageContainer.Selected"]
+ADMIN_SCOPES = [
+    "SharePointTenantSettings.Read.All",
+    "SharePointTenantSettings.ReadWrite.All",
+]
+
+MODULE_SCOPES: dict[str, list[str]] = {
+    "sharepoint": (
+        SITE_BASE_SCOPES + TERMSTORE_SCOPES + ONENOTE_SCOPES + EMBEDDED_SCOPES + ADMIN_SCOPES
+    ),
+    "sites": SITE_BASE_SCOPES,
+    "lists": SITE_BASE_SCOPES,
+    "pages": SITE_BASE_SCOPES,
+    "termstore": TERMSTORE_SCOPES,
+    "onenote": ONENOTE_SCOPES,
+    "embedded": EMBEDDED_SCOPES,
+    "admin": ADMIN_SCOPES,
+}
+
+# Top-level `security` advertises a representative subset (the typical
+# read+write pair for the submodule's main resource).
+DEFAULT_SECURITY: dict[str, list[str]] = {
+    "sharepoint": ["Sites.Read.All", "Sites.ReadWrite.All"],
+    "sites": ["Sites.Read.All", "Sites.ReadWrite.All"],
+    "lists": ["Sites.Read.All", "Sites.ReadWrite.All"],
+    "pages": ["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All"],
+    "termstore": ["TermStore.Read.All", "TermStore.ReadWrite.All"],
+    "onenote": ["Notes.Read.All", "Notes.ReadWrite.All"],
+    "embedded": ["FileStorageContainer.Selected"],
+    "admin": ["SharePointTenantSettings.Read.All", "SharePointTenantSettings.ReadWrite.All"],
+}
+
+
+def build_security_scheme(module: str) -> dict:
+    """Build the `azureOAuth2` security scheme entry for a submodule."""
+    scopes = MODULE_SCOPES[module]
+    delegated_scopes = {s: SCOPE_DESCRIPTIONS[s] for s in scopes}
+    app_scopes = {
+        s: f"{SCOPE_DESCRIPTIONS[s]} (application permission)" for s in scopes
+    }
+    return {
+        "type": "oauth2",
+        "description": (
+            "OAuth 2.0 authorization using Azure Active Directory (Microsoft Entra ID). "
+            "Supports both delegated and application permissions for accessing "
+            "SharePoint resources via the Microsoft Graph API."
+        ),
+        "flows": {
+            "authorizationCode": {
+                "authorizationUrl": OAUTH2_AUTH_URL,
+                "tokenUrl": OAUTH2_TOKEN_URL,
+                "scopes": delegated_scopes,
+            },
+            "clientCredentials": {
+                "tokenUrl": OAUTH2_TOKEN_URL,
+                "scopes": app_scopes,
+            },
+        },
+    }
+
+
+# (output filename, predicate, info title, security-module-key)
+OUTPUTS: list[tuple[Path, Callable[[str], bool], str, str]] = [
+    (OUT_DIR / "sharepoint.yaml", in_sharepoint, "Microsoft Graph — SharePoint API", "sharepoint"),
+    (SUBMODULE_DIR / "sites.yaml", in_sites_remainder, "Microsoft Graph — SharePoint Sites", "sites"),
+    (SUBMODULE_DIR / "lists.yaml", in_lists, "Microsoft Graph — SharePoint Lists", "lists"),
+    (SUBMODULE_DIR / "pages.yaml", in_pages, "Microsoft Graph — SharePoint Pages", "pages"),
+    (SUBMODULE_DIR / "termstore.yaml", in_termstore, "Microsoft Graph — SharePoint Term Store", "termstore"),
+    (SUBMODULE_DIR / "onenote.yaml", in_onenote, "Microsoft Graph — SharePoint OneNote", "onenote"),
+    (SUBMODULE_DIR / "embedded.yaml", in_embedded, "Microsoft Graph — SharePoint Embedded", "embedded"),
+    (SUBMODULE_DIR / "admin.yaml", in_admin, "Microsoft Graph — SharePoint Admin", "admin"),
 ]
 
 
@@ -257,11 +369,16 @@ def build_output(
     source_doc: dict,
     predicate: Callable[[str], bool],
     title: str,
+    security_module: str,
 ) -> dict:
     selected_paths = {p: ops for p, ops in source_doc["paths"].items() if predicate(p)}
 
     kept = walk_ref_closure(selected_paths, source_doc.get("components", {}))
     pruned_components = subset_components(source_doc.get("components", {}), kept)
+
+    # Inject the azureOAuth2 security scheme into components.securitySchemes.
+    pruned_components.setdefault("securitySchemes", {})
+    pruned_components["securitySchemes"]["azureOAuth2"] = build_security_scheme(security_module)
 
     used_tag_names = collect_tags(selected_paths)
     source_tags = source_doc.get("tags") or []
@@ -281,11 +398,11 @@ def build_output(
     }
     if "servers" in source_doc:
         out["servers"] = source_doc["servers"]
+    out["security"] = [{"azureOAuth2": list(DEFAULT_SECURITY[security_module])}]
     if pruned_tags:
         out["tags"] = pruned_tags
     out["paths"] = selected_paths
-    if pruned_components:
-        out["components"] = pruned_components
+    out["components"] = pruned_components
     return out
 
 
@@ -307,9 +424,9 @@ def main() -> int:
     total_paths_emitted = 0
     submodule_paths_emitted = 0
 
-    for target, predicate, title in OUTPUTS:
+    for target, predicate, title, security_module in OUTPUTS:
         t1 = time.monotonic()
-        out_doc = build_output(source_doc, predicate, title)
+        out_doc = build_output(source_doc, predicate, title, security_module)
         n_paths = len(out_doc["paths"])
         n_ops = count_ops(out_doc["paths"])
         n_schemas = len(out_doc.get("components", {}).get("schemas", {}))

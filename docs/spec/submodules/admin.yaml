@@ -8,6 +8,10 @@ info:
     toolVersion: 0.0.0.0
 servers:
 - url: https://graph.microsoft.com/v1.0
+security:
+- azureOAuth2:
+  - SharePointTenantSettings.Read.All
+  - SharePointTenantSettings.ReadWrite.All
 tags:
 - name: admin.sharepoint
   x-ms-docs-toc-type: page
@@ -466,3 +470,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/microsoft.graph.ODataErrors.ODataError'
+  securitySchemes:
+    azureOAuth2:
+      type: oauth2
+      description: OAuth 2.0 authorization using Azure Active Directory (Microsoft Entra ID). Supports both delegated and application permissions for accessing SharePoint resources via the Microsoft Graph API.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
+          tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
+          scopes:
+            SharePointTenantSettings.Read.All: Read SharePoint and OneDrive tenant settings
+            SharePointTenantSettings.ReadWrite.All: Read and change SharePoint and OneDrive tenant settings
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
+          scopes:
+            SharePointTenantSettings.Read.All: Read SharePoint and OneDrive tenant settings (application permission)
+            SharePointTenantSettings.ReadWrite.All: Read and change SharePoint and OneDrive tenant settings (application permission)

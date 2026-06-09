@@ -8,6 +8,10 @@ info:
     toolVersion: 0.0.0.0
 servers:
 - url: https://graph.microsoft.com/v1.0
+security:
+- azureOAuth2:
+  - Sites.Read.All
+  - Sites.ReadWrite.All
 tags:
 - name: sites.list
   x-ms-docs-toc-type: page
@@ -27341,3 +27345,25 @@ components:
       explode: false
       schema:
         type: string
+  securitySchemes:
+    azureOAuth2:
+      type: oauth2
+      description: OAuth 2.0 authorization using Azure Active Directory (Microsoft Entra ID). Supports both delegated and application permissions for accessing SharePoint resources via the Microsoft Graph API.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
+          tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
+          scopes:
+            Sites.Read.All: Read items in all site collections
+            Sites.ReadWrite.All: Read and write items in all site collections
+            Sites.Manage.All: Create, edit, and delete items and lists in all site collections
+            Sites.FullControl.All: Have full control of all site collections
+            Sites.Selected: Access selected site collections only
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
+          scopes:
+            Sites.Read.All: Read items in all site collections (application permission)
+            Sites.ReadWrite.All: Read and write items in all site collections (application permission)
+            Sites.Manage.All: Create, edit, and delete items and lists in all site collections (application permission)
+            Sites.FullControl.All: Have full control of all site collections (application permission)
+            Sites.Selected: Access selected site collections only (application permission)
