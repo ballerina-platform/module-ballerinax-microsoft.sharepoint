@@ -24,7 +24,7 @@ Run from the repository root:
 
 from __future__ import annotations
 
-import os
+import json
 import re
 import sys
 import time
@@ -47,6 +47,14 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SOURCE = REPO_ROOT / "docs" / "spec" / "graphexplorer.yaml"
 OUT_DIR = REPO_ROOT / "docs" / "spec"
 SUBMODULE_DIR = OUT_DIR / "submodules"
+
+# `bal openapi` parses YAML through SnakeYAML, which caps single-document size
+# at 3,145,728 code points. Any spec emitted as YAML and larger than this
+# fails to generate a Ballerina client — silently producing no code, which
+# looks like "auth missing / everything missing" to the user. We emit JSON
+# alongside the YAML for any output that crosses this threshold, since the
+# Jackson-based JSON parser has no such cap.
+SNAKEYAML_CODEPOINT_LIMIT = 3_145_728
 
 # YAML sections under `components` that may contain $refs and need pruning.
 COMPONENT_SECTIONS = (
@@ -270,14 +278,8 @@ def collect_tags(paths: dict) -> set[str]:
     return used
 
 
-def walk_ref_closure(seed_node, components: dict) -> dict[str, set[str]]:
-    """
-    Starting from $refs found in `seed_node`, walk the components graph
-    transitively. Returns {section: {name, ...}} of components to keep.
-    """
-    kept: dict[str, set[str]] = {s: set() for s in COMPONENT_SECTIONS}
-    queue: list[str] = list(collect_refs(seed_node))
-
+def _drain_queue(queue: list[str], kept: dict[str, set[str]], components: dict) -> None:
+    """Transitively resolve every ref currently in `queue` into `kept`."""
     while queue:
         ref = queue.pop()
         if not ref.startswith(REF_PREFIX):
@@ -297,6 +299,111 @@ def walk_ref_closure(seed_node, components: dict) -> dict[str, set[str]]:
             continue
         kept[section].add(name)
         queue.extend(collect_refs(component))
+
+
+def _build_derived_index(schemas: dict) -> dict[str, list[str]]:
+    """Map base-schema-name -> list of schema names that derive from it via allOf $ref."""
+    derived_of: dict[str, list[str]] = {}
+    for name, schema in schemas.items():
+        if not isinstance(schema, dict):
+            continue
+        for entry in schema.get("allOf") or []:
+            if not isinstance(entry, dict):
+                continue
+            ref = entry.get("$ref", "")
+            if isinstance(ref, str) and ref.startswith("#/components/schemas/"):
+                base = ref[len("#/components/schemas/"):]
+                derived_of.setdefault(base, []).append(name)
+    return derived_of
+
+
+def walk_ref_closure(seed_node, components: dict) -> dict[str, set[str]]:
+    """
+    Starting from `$ref` values found in `seed_node`, build the set of
+    components that must travel with `seed_node`.
+
+    Three phases, in order:
+
+      1. **Transitive `$ref` closure.** Walk every `$ref` reachable from
+         `seed_node`, follow into the referenced component, and walk that
+         component's `$ref`s too — until the set stabilises.
+
+      2. **Polymorphism completion.** Microsoft Graph models inheritance via
+         `allOf: [{$ref: <base>}, …]`. When a path operation directly
+         references a base schema as a request/response body, the actual
+         payload at runtime may be any *derived* schema, disambiguated only
+         by the `@odata.type` annotation. The transitive `$ref` walk does
+         not reach those derived schemas (the `$ref` edge points base→from-derived,
+         not derived→from-base), so they would be dropped without this step.
+         For every base schema *directly* referenced from `seed_node`, we
+         include every transitively derived schema, then re-run the `$ref`
+         walk so their own dependencies get pulled in.
+
+      3. **Example payloads.** Pull in `components/examples/<name>` for every
+         kept `components/schemas/<name>` (the upstream uses identical
+         names). These hold the `@odata.type` annotations and are not
+         reachable via `$ref` at all.
+    """
+    kept: dict[str, set[str]] = {s: set() for s in COMPONENT_SECTIONS}
+
+    # Phase 1: standard `$ref` closure from the seed (paths).
+    queue: list[str] = list(collect_refs(seed_node))
+    _drain_queue(queue, kept, components)
+
+    # Phase 2: polymorphism completion. Only bases that are directly referenced
+    # from `seed_node` get their derived chains pulled in — transitively-included
+    # schemas (e.g. `microsoft.graph.entity`, which sits at the root of nearly
+    # every Graph type) are intentionally excluded to avoid dragging in the
+    # entire Graph surface.
+    #
+    # Also excluded: bases whose name is outside the `microsoft.graph.*`
+    # namespace. These are OData *infrastructure* base classes — most notably
+    # `BaseCollectionPaginationCountResponse` — whose derivatives are typed
+    # pagination wrappers (one per entity type), not real polymorphic
+    # `@odata.type` subtypes. Treating them as polymorphic bases would
+    # incorrectly drag in every `*CollectionResponse` schema in Graph (>1,200
+    # entries) and through their transitive `$ref`s, essentially the whole API.
+    schemas_dict = components.get("schemas", {}) or {}
+    derived_of = _build_derived_index(schemas_dict)
+
+    def _is_polymorphic_base(name: str) -> bool:
+        return name.startswith("microsoft.graph.")
+
+    bases_from_seed: set[str] = set()
+    for ref in collect_refs(seed_node):
+        if ref.startswith("#/components/schemas/"):
+            schema_name = ref[len("#/components/schemas/"):]
+            if _is_polymorphic_base(schema_name):
+                bases_from_seed.add(schema_name)
+
+    poly_queue: list[str] = list(bases_from_seed)
+    while poly_queue:
+        base = poly_queue.pop()
+        for derived_name in derived_of.get(base, []):
+            if derived_name in kept["schemas"]:
+                continue
+            derived_schema = schemas_dict.get(derived_name)
+            if derived_schema is None:
+                continue
+            kept["schemas"].add(derived_name)
+            queue.extend(collect_refs(derived_schema))
+            # The newly added schema can itself be a base for further derivatives.
+            if _is_polymorphic_base(derived_name):
+                poly_queue.append(derived_name)
+
+    # Resolve any new refs introduced by the derived schemas.
+    _drain_queue(queue, kept, components)
+
+    # Phase 3: pull in `components/examples/<name>` for every kept schema.
+    # These payloads carry the `@odata.type` annotations and are not reachable
+    # via $ref anywhere in the upstream spec.
+    available_examples = components.get("examples", {}) or {}
+    if isinstance(available_examples, dict):
+        for schema_name in list(kept["schemas"]):
+            if schema_name in available_examples and schema_name not in kept["examples"]:
+                kept["examples"].add(schema_name)
+                queue.extend(collect_refs(available_examples[schema_name]))
+        _drain_queue(queue, kept, components)
 
     return kept
 
@@ -363,6 +470,14 @@ def write_yaml(target: Path, doc: dict) -> None:
             width=4096,
             default_flow_style=False,
         )
+
+
+def write_json(target: Path, doc: dict) -> None:
+    """Write `doc` as compact JSON. JSON is the safe fallback when YAML output
+    exceeds the SnakeYAML parser cap that `bal openapi` enforces."""
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open("w", encoding="utf-8") as fh:
+        json.dump(doc, fh, ensure_ascii=False, separators=(",", ":"))
 
 
 def build_output(
@@ -439,13 +554,27 @@ def main() -> int:
             )
 
         write_yaml(target, out_doc)
-        size_mb = target.stat().st_size / (1024 * 1024)
+        yaml_size_bytes = target.stat().st_size
+        size_mb = yaml_size_bytes / (1024 * 1024)
+        extras: list[str] = []
+        # If the YAML output exceeds the SnakeYAML cap, also emit JSON so
+        # `bal openapi` (and other Jackson-based parsers) can still consume it.
+        if yaml_size_bytes > SNAKEYAML_CODEPOINT_LIMIT:
+            json_target = target.with_suffix(".json")
+            write_json(json_target, out_doc)
+            json_size_mb = json_target.stat().st_size / (1024 * 1024)
+            extras.append(
+                f"YAML > SnakeYAML cap ({yaml_size_bytes:,} > {SNAKEYAML_CODEPOINT_LIMIT:,}); "
+                f"also emitted {json_target.relative_to(REPO_ROOT)} ({json_size_mb:.1f} MB)"
+            )
         print(
             f"  {target.relative_to(REPO_ROOT)}: "
             f"{n_paths} paths, {n_ops} ops, {n_schemas} schemas, "
             f"{size_mb:.1f} MB ({time.monotonic() - t1:.1f}s)",
             flush=True,
         )
+        for note in extras:
+            print(f"    note: {note}", flush=True)
 
         if target.parent == OUT_DIR:
             total_paths_emitted = n_paths

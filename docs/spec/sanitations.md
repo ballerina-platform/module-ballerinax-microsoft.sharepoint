@@ -39,9 +39,25 @@ The upstream `components` block contains 4,532 schemas plus shared `responses`, 
 1. Walks every `$ref` reachable from the selected paths.
 2. Resolves each referenced component, then walks its subtree for further `$ref`s.
 3. Repeats until the closure stabilises.
-4. Emits only the items in that closure under `components.<section>`.
+4. Additionally pulls in `components/examples/<name>` for every kept `components/schemas/<name>` — see §3.1 below.
+5. Emits only the items in that closure under `components.<section>`.
 
 Every emitted spec is verified to have zero dangling `$ref`s before being written out.
+
+### 3.1 Examples and the `@odata.type` annotation
+
+The upstream `components.examples` block (~2,490 entries) holds one sample JSON payload per Microsoft Graph type, e.g. `components/examples/microsoft.graph.sitePage`. These payloads are the **only** place where `@odata.type` annotations appear in the spec — they show callers which concrete subtype to send/expect for polymorphic OData fields. No upstream path operation references these examples via `$ref`, so a strict transitive walk would drop them entirely (and with them, every `@odata.type` occurrence — 4,164 of them).
+
+To preserve the `@odata.type` annotations, the extractor adds an extra step: after the `$ref` closure is built, for every kept schema name `X` that also exists in `components.examples`, the matching example entry is included in the output. This keeps the example/schema correspondence intact (one-to-one by name) without inflating the output with unrelated examples.
+
+### 3.2 Polymorphism — derived schemas for path-referenced bases
+
+Microsoft Graph models inheritance via `allOf: [{$ref: <base>}, ...]`. The `$ref` edge points *from derived to base*, so a transitive `$ref` walk never reaches derived types. When a path operation directly references a base schema as a request/response body (e.g. `microsoft.graph.baseSitePage`, `microsoft.graph.webPart`, `microsoft.graph.sharePointMigrationEvent`), the actual payload at runtime may be any derived schema, disambiguated only by the `@odata.type` annotation in the JSON body. Without those derived schemas, the generated Ballerina types can't represent the concrete subtype payloads (e.g. `pages.yaml` would expose `webPart` but not the concrete `standardWebPart` / `textWebPart`).
+
+The extractor's second pass closes this gap: for every base schema *directly* referenced from a selected path, all transitively derived schemas are included. Two important guards keep this from dragging in the whole Graph surface:
+
+- **Only `microsoft.graph.*` bases participate.** OData infrastructure types such as `BaseCollectionPaginationCountResponse` are excluded because their "derivatives" are typed pagination wrappers (one `*CollectionResponse` per entity type, >1,200 entries), not real `@odata.type` polymorphic subtypes.
+- **Only path-referenced bases participate.** A schema that ends up in `components/schemas` only because it was pulled in transitively (e.g. `microsoft.graph.entity`, the root of nearly every Graph type — 689 direct descendants) does not get its derived chain expanded.
 
 ## 4. Cosmetic changes
 
@@ -70,7 +86,13 @@ Scopes per submodule:
 | `admin` | `SharePointTenantSettings.Read.All`, `SharePointTenantSettings.ReadWrite.All` |
 | `sharepoint` (consolidated) | Union of all of the above |
 
-## 6. Reproducibility / OpenAPI CLI commands
+## 6. SnakeYAML size cap and JSON fallback
+
+`bal openapi` parses YAML through SnakeYAML, which enforces a single-document cap of **3,145,728 code points** (~3 MB). Specs larger than this fail to parse with `The incoming YAML document exceeds the limit: 3145728 code points.` and produce **no generated code at all** — which can look like "the auth configuration is missing" because every other artifact is missing too.
+
+All seven submodule YAMLs sit comfortably under the cap and `bal openapi` consumes them without issue. The consolidated `sharepoint.yaml` (~3.8 MB) exceeds the cap, so the extractor additionally emits **`docs/spec/sharepoint.json`** (~3.1 MB, compact JSON). Jackson's JSON parser has no comparable cap, so the JSON file generates successfully. Use the JSON variant whenever you need the consolidated surface in a tool that goes through `bal openapi` (or any other Swagger-Parser-based tooling).
+
+## 7. Reproducibility / OpenAPI CLI commands
 
 Regenerate every spec from the upstream by running this from the repository root:
 
@@ -83,12 +105,12 @@ Requirements: Python 3.10+ and PyYAML (`pip install pyyaml`). The extractor is d
 To generate the Ballerina client from a spec, run from the repository root:
 
 ```bash
-# Consolidated SharePoint client
-bal openapi -i docs/spec/sharepoint.yaml
+# Consolidated SharePoint client — use the JSON variant (YAML exceeds the SnakeYAML cap)
+bal openapi -i docs/spec/sharepoint.json --mode client
 
-# Per-submodule clients
-bal openapi -i docs/spec/submodules/lists.yaml
-bal openapi -i docs/spec/submodules/sites.yaml
+# Per-submodule clients — YAML works directly
+bal openapi -i docs/spec/submodules/lists.yaml --mode client
+bal openapi -i docs/spec/submodules/sites.yaml --mode client
 # ... and likewise for pages, termstore, onenote, embedded, admin
 ```
 

@@ -10571,6 +10571,12 @@ components:
               $ref: '#/components/schemas/microsoft.graph.callTranscript'
             description: The transcripts of a call. Read-only.
             x-ms-navigationProperty: true
+    microsoft.graph.agentUser:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.user'
+      - title: agentUser
+        type: object
+        description: Represents a Microsoft Entra user account.
     microsoft.graph.agreementAcceptance:
       allOf:
       - $ref: '#/components/schemas/microsoft.graph.entity'
@@ -11254,6 +11260,25 @@ components:
             type: string
             description: The URL that can be used to access the content of the transcript. Read-only.
             nullable: true
+    microsoft.graph.canvasLayout:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.entity'
+      - title: canvasLayout
+        type: object
+        properties:
+          horizontalSections:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.horizontalSection'
+            description: Collection of horizontal sections on the SharePoint page.
+            x-ms-navigationProperty: true
+          verticalSection:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.verticalSection'
+            - type: object
+              nullable: true
+            description: Vertical section on the SharePoint page.
+            x-ms-navigationProperty: true
     microsoft.graph.changeTrackedEntity:
       allOf:
       - $ref: '#/components/schemas/microsoft.graph.entity'
@@ -13911,6 +13936,49 @@ components:
             items:
               $ref: '#/components/schemas/microsoft.graph.settingValue'
             description: Collection of name-value pairs corresponding to the name and defaultValue properties in the referenced groupSettingTemplates object.
+    microsoft.graph.horizontalSection:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.entity'
+      - title: horizontalSection
+        type: object
+        properties:
+          emphasis:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.sectionEmphasisType'
+            - type: object
+              nullable: true
+            description: 'Enumeration value that indicates the emphasis of the section background. The possible values are: none, netural, soft, strong, unknownFutureValue.'
+          layout:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.horizontalSectionLayoutType'
+            - type: object
+              nullable: true
+            description: 'Layout type of the section. The possible values are: none, oneColumn, twoColumns, threeColumns, oneThirdLeftColumn, oneThirdRightColumn, fullWidth, unknownFutureValue.'
+          columns:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.horizontalSectionColumn'
+            description: The set of vertical columns in this section.
+            x-ms-navigationProperty: true
+    microsoft.graph.horizontalSectionColumn:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.entity'
+      - title: horizontalSectionColumn
+        type: object
+        properties:
+          width:
+            maximum: 2147483647
+            minimum: -2147483648
+            type: number
+            description: Width of the column. A horizontal section is divided into 12 grids. A column should have a value of 1-12 to represent its range spans. For example, there can be two columns both have a width of 6 in a section.
+            format: int32
+            nullable: true
+          webparts:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.webPart'
+            description: The collection of WebParts in this column.
+            x-ms-navigationProperty: true
     microsoft.graph.inferenceClassification:
       allOf:
       - $ref: '#/components/schemas/microsoft.graph.entity'
@@ -16812,6 +16880,44 @@ components:
             description: The width of the photo. Read-only.
             format: int32
             nullable: true
+    microsoft.graph.recycleBin:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.baseItem'
+      - title: recycleBin
+        type: object
+        properties:
+          settings:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.recycleBinSettings'
+            - type: object
+              nullable: true
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.recycleBinItem'
+            description: List of the recycleBinItems deleted by a user.
+            x-ms-navigationProperty: true
+    microsoft.graph.recycleBinItem:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.baseItem'
+      - title: recycleBinItem
+        type: object
+        properties:
+          deletedDateTime:
+            pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+            type: string
+            description: Date and time when the item was deleted. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+            format: date-time
+            nullable: true
+          deletedFromLocation:
+            type: string
+            description: Relative URL of the list or folder that originally contained the item.
+            nullable: true
+          size:
+            type: number
+            description: Size of the item in bytes.
+            format: int64
+            nullable: true
     microsoft.graph.resourceSpecificPermissionGrant:
       allOf:
       - $ref: '#/components/schemas/microsoft.graph.directoryObject'
@@ -17192,6 +17298,66 @@ components:
       - $ref: '#/components/schemas/microsoft.graph.storageQuotaBreakdown'
       - title: serviceStorageQuotaBreakdown
         type: object
+    microsoft.graph.sharedDriveItem:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.baseItem'
+      - title: sharedDriveItem
+        type: object
+        properties:
+          owner:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.identitySet'
+            - type: object
+              nullable: true
+            description: Information about the owner of the shared item being referenced.
+          driveItem:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.driveItem'
+            - type: object
+              nullable: true
+            description: Used to access the underlying driveItem
+            x-ms-navigationProperty: true
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.driveItem'
+            description: All driveItems contained in the sharing root. This collection cannot be enumerated.
+            x-ms-navigationProperty: true
+          list:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.list'
+            - type: object
+              nullable: true
+            description: Used to access the underlying list
+            x-ms-navigationProperty: true
+          listItem:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.listItem'
+            - type: object
+              nullable: true
+            description: Used to access the underlying listItem
+            x-ms-navigationProperty: true
+          permission:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.permission'
+            - type: object
+              nullable: true
+            description: Used to access the permission representing the underlying sharing link
+            x-ms-navigationProperty: true
+          root:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.driveItem'
+            - type: object
+              nullable: true
+            description: Used to access the underlying driveItem. Deprecated -- use driveItem instead.
+            x-ms-navigationProperty: true
+          site:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.site'
+            - type: object
+              nullable: true
+            description: Used to access the underlying site
+            x-ms-navigationProperty: true
     microsoft.graph.sharedInsight:
       allOf:
       - $ref: '#/components/schemas/microsoft.graph.entity'
@@ -17431,6 +17597,55 @@ components:
             items:
               $ref: '#/components/schemas/microsoft.graph.termStore.store'
             description: The collection of termStores under this site.
+            x-ms-navigationProperty: true
+    microsoft.graph.sitePage:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.baseSitePage'
+      - title: sitePage
+        type: object
+        properties:
+          promotionKind:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.pagePromotionType'
+            - type: object
+              nullable: true
+            description: 'Indicates the promotion kind of the sitePage. The possible values are: microsoftReserved, page, newsPost, unknownFutureValue.'
+          reactions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.reactionsFacet'
+            - type: object
+              nullable: true
+            description: Reactions information for the page.
+          showComments:
+            type: boolean
+            description: Determines whether or not to show comments at the bottom of the page.
+            nullable: true
+          showRecommendedPages:
+            type: boolean
+            description: Determines whether or not to show recommended pages at the bottom of the page.
+            nullable: true
+          thumbnailWebUrl:
+            type: string
+            description: Url of the sitePage's thumbnail image
+            nullable: true
+          titleArea:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.titleArea'
+            - type: object
+              nullable: true
+            description: Title area on the SharePoint page.
+          canvasLayout:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.canvasLayout'
+            - type: object
+              nullable: true
+            description: Indicates the layout of the content in a given SharePoint page, including horizontal sections and vertical sections.
+            x-ms-navigationProperty: true
+          webParts:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.webPart'
+            description: Collection of webparts on the SharePoint page.
             x-ms-navigationProperty: true
     microsoft.graph.softwareOathAuthenticationMethod:
       allOf:
@@ -19372,6 +19587,29 @@ components:
               $ref: '#/components/schemas/microsoft.graph.userScopeTeamsAppInstallation'
             description: The apps installed in the personal scope of this user.
             x-ms-navigationProperty: true
+    microsoft.graph.verticalSection:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.entity'
+      - title: verticalSection
+        type: object
+        properties:
+          emphasis:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.sectionEmphasisType'
+            - type: object
+              nullable: true
+            description: 'Enumeration value that indicates the emphasis of the section background. The possible values are: none, netural, soft, strong, unknownFutureValue.'
+          webparts:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.webPart'
+            description: The set of web parts in this section.
+            x-ms-navigationProperty: true
+    microsoft.graph.webPart:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.entity'
+      - title: webPart
+        type: object
     microsoft.graph.windowsDeviceMalwareState:
       allOf:
       - $ref: '#/components/schemas/microsoft.graph.entity'
@@ -22682,6 +22920,18 @@ components:
           - type: object
             nullable: true
           description: Represents the minimum and maximum sizes (in kilobytes) that an incoming message must fall in between in order for the condition or exception to apply.
+    microsoft.graph.metaDataKeyStringPair:
+      title: metaDataKeyStringPair
+      type: object
+      properties:
+        key:
+          type: string
+          description: Key of the meta data.
+          nullable: true
+        value:
+          type: string
+          description: Value of the meta data.
+          nullable: true
     microsoft.graph.mobileAppIdentifier:
       title: mobileAppIdentifier
       type: object
@@ -24133,6 +24383,31 @@ components:
           description: Total space used, in bytes. Read-only.
           format: int64
           nullable: true
+    microsoft.graph.reactionsFacet:
+      title: reactionsFacet
+      type: object
+      properties:
+        commentCount:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+          description: Count of comments.
+          format: int32
+          nullable: true
+        likeCount:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+          description: Count of likes.
+          format: int32
+          nullable: true
+        shareCount:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+          description: Count of shares.
+          format: int32
+          nullable: true
     microsoft.graph.recipient:
       title: recipient
       type: object
@@ -24223,6 +24498,17 @@ components:
           - type: object
             nullable: true
           description: 'The recurrence range. The possible values are: endDate, noEnd, numbered. Required.'
+    microsoft.graph.recycleBinSettings:
+      title: recycleBinSettings
+      type: object
+      properties:
+        retentionPeriodOverrideDays:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+          description: Recycle bin retention period override in days for deleted content. The default value is 93; the value range is 7 to 180. The setting applies to newly deleted content only. Setting this property to null reverts to its default value. Read-write.
+          format: int32
+          nullable: true
     microsoft.graph.remoteItem:
       title: remoteItem
       type: object
@@ -24498,6 +24784,30 @@ components:
           - type: object
             nullable: true
           description: Opens the section in OneNote on the web.
+    microsoft.graph.serverProcessedContent:
+      title: serverProcessedContent
+      type: object
+      properties:
+        htmlStrings:
+          type: array
+          items:
+            $ref: '#/components/schemas/microsoft.graph.metaDataKeyStringPair'
+          description: A key-value map where keys are string identifiers and values are rich text with HTML format. SharePoint servers treat the values as HTML content and run services like safety checks, search index and link fixup on them.
+        imageSources:
+          type: array
+          items:
+            $ref: '#/components/schemas/microsoft.graph.metaDataKeyStringPair'
+          description: A key-value map where keys are string identifiers and values are image sources. SharePoint servers treat the values as image sources and run services like search index and link fixup on them.
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/microsoft.graph.metaDataKeyStringPair'
+          description: A key-value map where keys are string identifiers and values are links. SharePoint servers treat the values as links and run services like link fixup on them.
+        searchablePlainTexts:
+          type: array
+          items:
+            $ref: '#/components/schemas/microsoft.graph.metaDataKeyStringPair'
+          description: A key-value map where keys are string identifiers and values are strings that should be search indexed.
     microsoft.graph.servicePlanInfo:
       title: servicePlanInfo
       type: object
@@ -25352,6 +25662,56 @@ components:
           type: string
           description: The name of a time zone. It can be a standard time zone name such as 'Hawaii-Aleutian Standard Time', or 'Customized Time Zone' for a custom time zone.
           nullable: true
+    microsoft.graph.titleArea:
+      title: titleArea
+      type: object
+      properties:
+        alternativeText:
+          type: string
+          description: Alternative text on the title area.
+          nullable: true
+        enableGradientEffect:
+          type: boolean
+          description: Indicates whether the title area has a gradient effect enabled.
+          nullable: true
+        imageWebUrl:
+          type: string
+          description: URL of the image in the title area.
+          nullable: true
+        layout:
+          anyOf:
+          - $ref: '#/components/schemas/microsoft.graph.titleAreaLayoutType'
+          - type: object
+            nullable: true
+          description: 'Enumeration value that indicates the layout of the title area. The possible values are: imageAndTitle, plain, colorBlock, overlap, unknownFutureValue.'
+        serverProcessedContent:
+          anyOf:
+          - $ref: '#/components/schemas/microsoft.graph.serverProcessedContent'
+          - type: object
+            nullable: true
+          description: Contains collections of data that can be processed by server side services like search index and link fixup.
+        showAuthor:
+          type: boolean
+          description: Indicates whether the author should be shown in title area.
+          nullable: true
+        showPublishedDate:
+          type: boolean
+          description: Indicates whether the published date should be shown in title area.
+          nullable: true
+        showTextBlockAboveTitle:
+          type: boolean
+          description: Indicates whether the text block above title should be shown in title area.
+          nullable: true
+        textAboveTitle:
+          type: string
+          description: The text above title line.
+          nullable: true
+        textAlignment:
+          anyOf:
+          - $ref: '#/components/schemas/microsoft.graph.titleAreaTextAlignmentType'
+          - type: object
+            nullable: true
+          description: 'Enumeration value that indicates the text alignment of the title area. The possible values are: left, center, unknownFutureValue.'
     microsoft.graph.usageDetails:
       title: usageDetails
       type: object
@@ -26396,6 +26756,18 @@ components:
       - moderate
       - unknownFutureValue
       type: string
+    microsoft.graph.horizontalSectionLayoutType:
+      title: horizontalSectionLayoutType
+      enum:
+      - none
+      - oneColumn
+      - twoColumns
+      - threeColumns
+      - oneThirdLeftColumn
+      - oneThirdRightColumn
+      - fullWidth
+      - unknownFutureValue
+      type: string
     microsoft.graph.importance:
       title: importance
       enum:
@@ -26771,6 +27143,14 @@ components:
       - microsoftReserved
       - article
       - home
+      - unknownFutureValue
+      type: string
+    microsoft.graph.pagePromotionType:
+      title: pagePromotionType
+      enum:
+      - microsoftReserved
+      - page
+      - newsPost
       - unknownFutureValue
       type: string
     microsoft.graph.passkeyType:
@@ -27948,6 +28328,15 @@ components:
       - charcoal
       - silver
       type: string
+    microsoft.graph.sectionEmphasisType:
+      title: sectionEmphasisType
+      enum:
+      - none
+      - neutral
+      - soft
+      - strong
+      - unknownFutureValue
+      type: string
     microsoft.graph.selectionLikelihoodInfo:
       title: selectionLikelihoodInfo
       enum:
@@ -28120,6 +28509,22 @@ components:
       - trafficCone
       - pin
       - sunny
+      - unknownFutureValue
+      type: string
+    microsoft.graph.titleAreaLayoutType:
+      title: titleAreaLayoutType
+      enum:
+      - imageAndTitle
+      - plain
+      - colorBlock
+      - overlap
+      - unknownFutureValue
+      type: string
+    microsoft.graph.titleAreaTextAlignmentType:
+      title: titleAreaTextAlignmentType
+      enum:
+      - left
+      - center
       - unknownFutureValue
       type: string
     microsoft.graph.usageRights:
@@ -29382,6 +29787,4765 @@ components:
       explode: false
       schema:
         type: string
+  examples:
+    microsoft.graph.activitiesContainer:
+      value:
+        contentActivities:
+        - '@odata.type': microsoft.graph.contentActivity
+    microsoft.graph.activityHistoryItem:
+      value:
+        activeDurationSeconds: '0'
+        activity:
+          '@odata.type': microsoft.graph.userActivity
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        expirationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastActiveDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        startedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        status:
+          '@odata.type': microsoft.graph.status
+        userTimezone: String
+    microsoft.graph.adhocCall:
+      value:
+        recordings:
+        - '@odata.type': microsoft.graph.callRecording
+        transcripts:
+        - '@odata.type': microsoft.graph.callTranscript
+    microsoft.graph.agentUser:
+      value: {}
+    microsoft.graph.agreementAcceptance:
+      value:
+        agreementFileId: String
+        agreementId: String
+        deviceDisplayName: String
+        deviceId: String
+        deviceOSType: String
+        deviceOSVersion: String
+        expirationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        recordedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        state:
+          '@odata.type': microsoft.graph.agreementAcceptanceState
+        userDisplayName: String
+        userEmail: String
+        userId: String
+        userPrincipalName: String
+    microsoft.graph.appRoleAssignment:
+      value:
+        appRoleId: 00000000-0000-0000-0000-000000000000
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        principalDisplayName: String
+        principalId: 00000000-0000-0000-0000-000000000000
+        principalType: String
+        resourceDisplayName: String
+        resourceId: 00000000-0000-0000-0000-000000000000
+    microsoft.graph.associatedTeamInfo:
+      value: {}
+    microsoft.graph.attachment:
+      value:
+        contentType: String
+        isInline: 'true'
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        name: String
+        size: '0'
+    microsoft.graph.attachmentBase:
+      value:
+        contentType: String
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        name: String
+        size: '0'
+    microsoft.graph.attachmentSession:
+      value:
+        content: Stream
+        expirationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        nextExpectedRanges:
+        - String
+    microsoft.graph.attendanceRecord:
+      value:
+        attendanceIntervals:
+        - '@odata.type': microsoft.graph.attendanceInterval
+        emailAddress: String
+        externalRegistrationInformation:
+          '@odata.type': microsoft.graph.virtualEventExternalRegistrationInformation
+        identity:
+          '@odata.type': microsoft.graph.identity
+        registrationId: String
+        role: String
+        totalAttendanceInSeconds: '0'
+    microsoft.graph.authentication:
+      value:
+        emailMethods:
+        - '@odata.type': microsoft.graph.emailAuthenticationMethod
+        externalAuthenticationMethods:
+        - '@odata.type': microsoft.graph.externalAuthenticationMethod
+        fido2Methods:
+        - '@odata.type': microsoft.graph.fido2AuthenticationMethod
+        methods:
+        - '@odata.type': microsoft.graph.authenticationMethod
+        microsoftAuthenticatorMethods:
+        - '@odata.type': microsoft.graph.microsoftAuthenticatorAuthenticationMethod
+        operations:
+        - '@odata.type': microsoft.graph.longRunningOperation
+        passwordMethods:
+        - '@odata.type': microsoft.graph.passwordAuthenticationMethod
+        phoneMethods:
+        - '@odata.type': microsoft.graph.phoneAuthenticationMethod
+        platformCredentialMethods:
+        - '@odata.type': microsoft.graph.platformCredentialAuthenticationMethod
+        softwareOathMethods:
+        - '@odata.type': microsoft.graph.softwareOathAuthenticationMethod
+        temporaryAccessPassMethods:
+        - '@odata.type': microsoft.graph.temporaryAccessPassAuthenticationMethod
+        windowsHelloForBusinessMethods:
+        - '@odata.type': microsoft.graph.windowsHelloForBusinessAuthenticationMethod
+    microsoft.graph.authenticationMethod:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.baseItem:
+      value:
+        createdBy:
+          '@odata.type': microsoft.graph.identitySet
+        createdByUser:
+          '@odata.type': microsoft.graph.user
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        description: String
+        eTag: String
+        lastModifiedBy:
+          '@odata.type': microsoft.graph.identitySet
+        lastModifiedByUser:
+          '@odata.type': microsoft.graph.user
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        name: String
+        parentReference:
+          '@odata.type': microsoft.graph.itemReference
+        webUrl: String
+    microsoft.graph.baseItemVersion:
+      value:
+        lastModifiedBy:
+          '@odata.type': microsoft.graph.identitySet
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        publication:
+          '@odata.type': microsoft.graph.publicationFacet
+    microsoft.graph.baseSitePage:
+      value:
+        pageLayout:
+          '@odata.type': microsoft.graph.pageLayoutType
+        publishingState:
+          '@odata.type': microsoft.graph.publicationFacet
+        title: String
+    microsoft.graph.calendar:
+      value:
+        allowedOnlineMeetingProviders:
+        - '@odata.type': microsoft.graph.onlineMeetingProviderType
+        calendarPermissions:
+        - '@odata.type': microsoft.graph.calendarPermission
+        calendarView:
+        - '@odata.type': microsoft.graph.event
+        canEdit: 'true'
+        canShare: 'true'
+        canViewPrivateItems: 'true'
+        changeKey: String
+        color:
+          '@odata.type': microsoft.graph.calendarColor
+        defaultOnlineMeetingProvider:
+          '@odata.type': microsoft.graph.onlineMeetingProviderType
+        events:
+        - '@odata.type': microsoft.graph.event
+        hexColor: String
+        isDefaultCalendar: 'true'
+        isRemovable: 'true'
+        isTallyingResponses: 'true'
+        multiValueExtendedProperties:
+        - '@odata.type': microsoft.graph.multiValueLegacyExtendedProperty
+        name: String
+        owner:
+          '@odata.type': microsoft.graph.emailAddress
+        singleValueExtendedProperties:
+        - '@odata.type': microsoft.graph.singleValueLegacyExtendedProperty
+    microsoft.graph.calendarGroup:
+      value:
+        calendars:
+        - '@odata.type': microsoft.graph.calendar
+        changeKey: String
+        classId: 00000000-0000-0000-0000-000000000000
+        name: String
+    microsoft.graph.calendarPermission:
+      value:
+        allowedRoles:
+        - '@odata.type': microsoft.graph.calendarRoleType
+        emailAddress:
+          '@odata.type': microsoft.graph.emailAddress
+        isInsideOrganization: 'true'
+        isRemovable: 'true'
+        role:
+          '@odata.type': microsoft.graph.calendarRoleType
+    microsoft.graph.callRecording:
+      value:
+        callId: String
+        content: Stream
+        contentCorrelationId: String
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        endDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        meetingId: String
+        meetingOrganizer:
+          '@odata.type': microsoft.graph.identitySet
+        recordingContentUrl: String
+    microsoft.graph.callTranscript:
+      value:
+        callId: String
+        content: Stream
+        contentCorrelationId: String
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        endDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        meetingId: String
+        meetingOrganizer:
+          '@odata.type': microsoft.graph.identitySet
+        metadataContent: Stream
+        transcriptContentUrl: String
+    microsoft.graph.canvasLayout:
+      value:
+        horizontalSections:
+        - '@odata.type': microsoft.graph.horizontalSection
+        verticalSection:
+          '@odata.type': microsoft.graph.verticalSection
+    microsoft.graph.changeTrackedEntity:
+      value:
+        createdBy:
+          '@odata.type': microsoft.graph.identitySet
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastModifiedBy:
+          '@odata.type': microsoft.graph.identitySet
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.channel:
+      value:
+        allMembers:
+        - '@odata.type': microsoft.graph.conversationMember
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        description: String
+        displayName: String
+        email: String
+        enabledApps:
+        - '@odata.type': microsoft.graph.teamsApp
+        filesFolder:
+          '@odata.type': microsoft.graph.driveItem
+        isArchived: 'true'
+        isFavoriteByDefault: 'true'
+        layoutType:
+          '@odata.type': microsoft.graph.channelLayoutType
+        members:
+        - '@odata.type': microsoft.graph.conversationMember
+        membershipType:
+          '@odata.type': microsoft.graph.channelMembershipType
+        messages:
+        - '@odata.type': microsoft.graph.chatMessage
+        migrationMode:
+          '@odata.type': microsoft.graph.migrationMode
+        originalCreatedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        sharedWithTeams:
+        - '@odata.type': microsoft.graph.sharedWithChannelTeamInfo
+        summary:
+          '@odata.type': microsoft.graph.channelSummary
+        tabs:
+        - '@odata.type': microsoft.graph.teamsTab
+        tenantId: String
+        webUrl: String
+    microsoft.graph.chat:
+      value:
+        chatType:
+          '@odata.type': microsoft.graph.chatType
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        installedApps:
+        - '@odata.type': microsoft.graph.teamsAppInstallation
+        isHiddenForAllMembers: 'true'
+        lastMessagePreview:
+          '@odata.type': microsoft.graph.chatMessageInfo
+        lastUpdatedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        members:
+        - '@odata.type': microsoft.graph.conversationMember
+        messages:
+        - '@odata.type': microsoft.graph.chatMessage
+        migrationMode:
+          '@odata.type': microsoft.graph.migrationMode
+        onlineMeetingInfo:
+          '@odata.type': microsoft.graph.teamworkOnlineMeetingInfo
+        originalCreatedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        permissionGrants:
+        - '@odata.type': microsoft.graph.resourceSpecificPermissionGrant
+        pinnedMessages:
+        - '@odata.type': microsoft.graph.pinnedChatMessageInfo
+        tabs:
+        - '@odata.type': microsoft.graph.teamsTab
+        targetedMessages:
+        - '@odata.type': microsoft.graph.targetedChatMessage
+        tenantId: String
+        topic: String
+        viewpoint:
+          '@odata.type': microsoft.graph.chatViewpoint
+        webUrl: String
+    microsoft.graph.chatMessage:
+      value:
+        attachments:
+        - '@odata.type': microsoft.graph.chatMessageAttachment
+        body:
+          '@odata.type': microsoft.graph.itemBody
+        channelIdentity:
+          '@odata.type': microsoft.graph.channelIdentity
+        chatId: String
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        deletedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        etag: String
+        eventDetail:
+          '@odata.type': microsoft.graph.eventMessageDetail
+        from:
+          '@odata.type': microsoft.graph.chatMessageFromIdentitySet
+        hostedContents:
+        - '@odata.type': microsoft.graph.chatMessageHostedContent
+        importance:
+          '@odata.type': microsoft.graph.chatMessageImportance
+        lastEditedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        locale: String
+        mentions:
+        - '@odata.type': microsoft.graph.chatMessageMention
+        messageHistory:
+        - '@odata.type': microsoft.graph.chatMessageHistoryItem
+        messageType:
+          '@odata.type': microsoft.graph.chatMessageType
+        policyViolation:
+          '@odata.type': microsoft.graph.chatMessagePolicyViolation
+        reactions:
+        - '@odata.type': microsoft.graph.chatMessageReaction
+        replies:
+        - '@odata.type': microsoft.graph.chatMessage
+        replyToId: String
+        subject: String
+        summary: String
+        webUrl: String
+    microsoft.graph.chatMessageHostedContent:
+      value: {}
+    microsoft.graph.chatMessageInfo:
+      value:
+        body:
+          '@odata.type': microsoft.graph.itemBody
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        eventDetail:
+          '@odata.type': microsoft.graph.eventMessageDetail
+        from:
+          '@odata.type': microsoft.graph.chatMessageFromIdentitySet
+        isDeleted: 'true'
+        messageType:
+          '@odata.type': microsoft.graph.chatMessageType
+    microsoft.graph.checklistItem:
+      value:
+        checkedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        displayName: String
+        isChecked: 'true'
+    microsoft.graph.cloudClipboardItem:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        expirationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        payloads:
+        - '@odata.type': microsoft.graph.cloudClipboardItemPayload
+    microsoft.graph.cloudClipboardRoot:
+      value:
+        items:
+        - '@odata.type': microsoft.graph.cloudClipboardItem
+    microsoft.graph.cloudPC:
+      value:
+        aadDeviceId: String
+        displayName: String
+        gracePeriodEndDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        imageDisplayName: String
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        managedDeviceId: String
+        managedDeviceName: String
+        onPremisesConnectionName: String
+        provisioningPolicyId: String
+        provisioningPolicyName: String
+        provisioningType:
+          '@odata.type': microsoft.graph.cloudPcProvisioningType
+        servicePlanId: String
+        servicePlanName: String
+        userPrincipalName: String
+    microsoft.graph.columnDefinition:
+      value:
+        boolean:
+          '@odata.type': microsoft.graph.booleanColumn
+        calculated:
+          '@odata.type': microsoft.graph.calculatedColumn
+        choice:
+          '@odata.type': microsoft.graph.choiceColumn
+        columnGroup: String
+        contentApprovalStatus:
+          '@odata.type': microsoft.graph.contentApprovalStatusColumn
+        currency:
+          '@odata.type': microsoft.graph.currencyColumn
+        dateTime:
+          '@odata.type': microsoft.graph.dateTimeColumn
+        defaultValue:
+          '@odata.type': microsoft.graph.defaultColumnValue
+        description: String
+        displayName: String
+        enforceUniqueValues: 'true'
+        geolocation:
+          '@odata.type': microsoft.graph.geolocationColumn
+        hidden: 'true'
+        hyperlinkOrPicture:
+          '@odata.type': microsoft.graph.hyperlinkOrPictureColumn
+        indexed: 'true'
+        isDeletable: 'true'
+        isReorderable: 'true'
+        isSealed: 'true'
+        lookup:
+          '@odata.type': microsoft.graph.lookupColumn
+        name: String
+        number:
+          '@odata.type': microsoft.graph.numberColumn
+        personOrGroup:
+          '@odata.type': microsoft.graph.personOrGroupColumn
+        propagateChanges: 'true'
+        readOnly: 'true'
+        required: 'true'
+        sourceColumn:
+          '@odata.type': microsoft.graph.columnDefinition
+        sourceContentType:
+          '@odata.type': microsoft.graph.contentTypeInfo
+        term:
+          '@odata.type': microsoft.graph.termColumn
+        text:
+          '@odata.type': microsoft.graph.textColumn
+        thumbnail:
+          '@odata.type': microsoft.graph.thumbnailColumn
+        type:
+          '@odata.type': microsoft.graph.columnTypes
+        validation:
+          '@odata.type': microsoft.graph.columnValidation
+    microsoft.graph.columnLink:
+      value:
+        name: String
+    microsoft.graph.contact:
+      value:
+        assistantName: String
+        birthday: '0001-01-01T00:00:00.0000000+00:00'
+        businessAddress:
+          '@odata.type': microsoft.graph.physicalAddress
+        businessHomePage: String
+        businessPhones:
+        - String
+        children:
+        - String
+        companyName: String
+        department: String
+        displayName: String
+        emailAddresses:
+        - '@odata.type': microsoft.graph.emailAddress
+        extensions:
+        - '@odata.type': microsoft.graph.extension
+        fileAs: String
+        generation: String
+        givenName: String
+        homeAddress:
+          '@odata.type': microsoft.graph.physicalAddress
+        homePhones:
+        - String
+        imAddresses:
+        - String
+        initials: String
+        jobTitle: String
+        manager: String
+        middleName: String
+        mobilePhone: String
+        multiValueExtendedProperties:
+        - '@odata.type': microsoft.graph.multiValueLegacyExtendedProperty
+        nickName: String
+        officeLocation: String
+        otherAddress:
+          '@odata.type': microsoft.graph.physicalAddress
+        parentFolderId: String
+        personalNotes: String
+        photo:
+          '@odata.type': microsoft.graph.profilePhoto
+        primaryEmailAddress:
+          '@odata.type': microsoft.graph.emailAddress
+        profession: String
+        secondaryEmailAddress:
+          '@odata.type': microsoft.graph.emailAddress
+        singleValueExtendedProperties:
+        - '@odata.type': microsoft.graph.singleValueLegacyExtendedProperty
+        spouseName: String
+        surname: String
+        tertiaryEmailAddress:
+          '@odata.type': microsoft.graph.emailAddress
+        title: String
+        yomiCompanyName: String
+        yomiGivenName: String
+        yomiSurname: String
+    microsoft.graph.contactFolder:
+      value:
+        childFolders:
+        - '@odata.type': microsoft.graph.contactFolder
+        contacts:
+        - '@odata.type': microsoft.graph.contact
+        displayName: String
+        multiValueExtendedProperties:
+        - '@odata.type': microsoft.graph.multiValueLegacyExtendedProperty
+        parentFolderId: String
+        singleValueExtendedProperties:
+        - '@odata.type': microsoft.graph.singleValueLegacyExtendedProperty
+    microsoft.graph.contentActivity:
+      value:
+        contentMetadata:
+          '@odata.type': microsoft.graph.processContentRequest
+        scopeIdentifier: String
+        userId: String
+    microsoft.graph.contentType:
+      value:
+        associatedHubsUrls:
+        - String
+        base:
+          '@odata.type': microsoft.graph.contentType
+        baseTypes:
+        - '@odata.type': microsoft.graph.contentType
+        columnLinks:
+        - '@odata.type': microsoft.graph.columnLink
+        columnPositions:
+        - '@odata.type': microsoft.graph.columnDefinition
+        columns:
+        - '@odata.type': microsoft.graph.columnDefinition
+        description: String
+        documentSet:
+          '@odata.type': microsoft.graph.documentSet
+        documentTemplate:
+          '@odata.type': microsoft.graph.documentSetContent
+        group: String
+        hidden: 'true'
+        inheritedFrom:
+          '@odata.type': microsoft.graph.itemReference
+        isBuiltIn: 'true'
+        name: String
+        order:
+          '@odata.type': microsoft.graph.contentTypeOrder
+        parentId: String
+        propagateChanges: 'true'
+        readOnly: 'true'
+        sealed: 'true'
+    microsoft.graph.conversation:
+      value:
+        hasAttachments: 'true'
+        lastDeliveredDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        preview: String
+        threads:
+        - '@odata.type': microsoft.graph.conversationThread
+        topic: String
+        uniqueSenders:
+        - String
+    microsoft.graph.conversationMember:
+      value:
+        displayName: String
+        roles:
+        - String
+        visibleHistoryStartDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.conversationThread:
+      value:
+        ccRecipients:
+        - '@odata.type': microsoft.graph.recipient
+        hasAttachments: 'true'
+        isLocked: 'true'
+        lastDeliveredDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        posts:
+        - '@odata.type': microsoft.graph.post
+        preview: String
+        topic: String
+        toRecipients:
+        - '@odata.type': microsoft.graph.recipient
+        uniqueSenders:
+        - String
+    microsoft.graph.dataSecurityAndGovernance:
+      value:
+        sensitivityLabels:
+        - '@odata.type': microsoft.graph.sensitivityLabel
+    microsoft.graph.dayNote:
+      value:
+        dayNoteDate: '0001-01-01'
+        draftDayNote:
+          '@odata.type': microsoft.graph.itemBody
+        sharedDayNote:
+          '@odata.type': microsoft.graph.itemBody
+    microsoft.graph.device:
+      value:
+        accountEnabled: 'true'
+        alternativeSecurityIds:
+        - '@odata.type': microsoft.graph.alternativeSecurityId
+        approximateLastSignInDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        complianceExpirationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        deviceCategory: String
+        deviceId: String
+        deviceMetadata: String
+        deviceOwnership: String
+        deviceVersion: '0'
+        displayName: String
+        enrollmentProfileName: String
+        enrollmentType: String
+        extensions:
+        - '@odata.type': microsoft.graph.extension
+        isCompliant: 'true'
+        isManaged: 'true'
+        isManagementRestricted: 'true'
+        isRooted: 'true'
+        managementType: String
+        manufacturer: String
+        mdmAppId: String
+        memberOf:
+        - '@odata.type': microsoft.graph.directoryObject
+        model: String
+        onPremisesLastSyncDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        onPremisesSecurityIdentifier: String
+        onPremisesSyncEnabled: 'true'
+        operatingSystem: String
+        operatingSystemVersion: String
+        physicalIds:
+        - String
+        profileType: String
+        registeredOwners:
+        - '@odata.type': microsoft.graph.directoryObject
+        registeredUsers:
+        - '@odata.type': microsoft.graph.directoryObject
+        registrationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        systemLabels:
+        - String
+        transitiveMemberOf:
+        - '@odata.type': microsoft.graph.directoryObject
+        trustType: String
+    microsoft.graph.deviceCategory:
+      value:
+        description: String
+        displayName: String
+    microsoft.graph.deviceCompliancePolicyState:
+      value:
+        displayName: String
+        platformType:
+          '@odata.type': microsoft.graph.policyPlatformType
+        settingCount: '0'
+        settingStates:
+        - '@odata.type': microsoft.graph.deviceCompliancePolicySettingState
+        state:
+          '@odata.type': microsoft.graph.complianceStatus
+        version: '0'
+    microsoft.graph.deviceConfigurationState:
+      value:
+        displayName: String
+        platformType:
+          '@odata.type': microsoft.graph.policyPlatformType
+        settingCount: '0'
+        settingStates:
+        - '@odata.type': microsoft.graph.deviceConfigurationSettingState
+        state:
+          '@odata.type': microsoft.graph.complianceStatus
+        version: '0'
+    microsoft.graph.deviceLogCollectionResponse:
+      value:
+        enrolledByUser: String
+        expirationDateTimeUTC: '0001-01-01T00:00:00.0000000+00:00'
+        initiatedByUserPrincipalName: String
+        managedDeviceId: 00000000-0000-0000-0000-000000000000
+        receivedDateTimeUTC: '0001-01-01T00:00:00.0000000+00:00'
+        requestedDateTimeUTC: '0001-01-01T00:00:00.0000000+00:00'
+        sizeInKB: '0'
+        status:
+          '@odata.type': microsoft.graph.appLogUploadState
+    microsoft.graph.deviceManagementTroubleshootingEvent:
+      value:
+        correlationId: String
+        eventDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.directoryObject:
+      value:
+        deletedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.documentSetVersion:
+      value:
+        comment: String
+        createdBy:
+          '@odata.type': microsoft.graph.identitySet
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        items:
+        - '@odata.type': microsoft.graph.documentSetVersionItem
+        shouldCaptureMinorVersion: 'true'
+    microsoft.graph.drive:
+      value:
+        bundles:
+        - '@odata.type': microsoft.graph.driveItem
+        driveType: String
+        following:
+        - '@odata.type': microsoft.graph.driveItem
+        items:
+        - '@odata.type': microsoft.graph.driveItem
+        list:
+          '@odata.type': microsoft.graph.list
+        owner:
+          '@odata.type': microsoft.graph.identitySet
+        quota:
+          '@odata.type': microsoft.graph.quota
+        root:
+          '@odata.type': microsoft.graph.driveItem
+        sharePointIds:
+          '@odata.type': microsoft.graph.sharepointIds
+        special:
+        - '@odata.type': microsoft.graph.driveItem
+        system:
+          '@odata.type': microsoft.graph.systemFacet
+    microsoft.graph.driveItem:
+      value:
+        analytics:
+          '@odata.type': microsoft.graph.itemAnalytics
+        audio:
+          '@odata.type': microsoft.graph.audio
+        bundle:
+          '@odata.type': microsoft.graph.bundle
+        children:
+        - '@odata.type': microsoft.graph.driveItem
+        content: Stream
+        cTag: String
+        deleted:
+          '@odata.type': microsoft.graph.deleted
+        file:
+          '@odata.type': microsoft.graph.file
+        fileSystemInfo:
+          '@odata.type': microsoft.graph.fileSystemInfo
+        folder:
+          '@odata.type': microsoft.graph.folder
+        image:
+          '@odata.type': microsoft.graph.image
+        listItem:
+          '@odata.type': microsoft.graph.listItem
+        location:
+          '@odata.type': microsoft.graph.geoCoordinates
+        malware:
+          '@odata.type': microsoft.graph.malware
+        package:
+          '@odata.type': microsoft.graph.package
+        pendingOperations:
+          '@odata.type': microsoft.graph.pendingOperations
+        permissions:
+        - '@odata.type': microsoft.graph.permission
+        photo:
+          '@odata.type': microsoft.graph.photo
+        publication:
+          '@odata.type': microsoft.graph.publicationFacet
+        remoteItem:
+          '@odata.type': microsoft.graph.remoteItem
+        retentionLabel:
+          '@odata.type': microsoft.graph.itemRetentionLabel
+        root:
+          '@odata.type': microsoft.graph.root
+        searchResult:
+          '@odata.type': microsoft.graph.searchResult
+        shared:
+          '@odata.type': microsoft.graph.shared
+        sharepointIds:
+          '@odata.type': microsoft.graph.sharepointIds
+        size: '0'
+        specialFolder:
+          '@odata.type': microsoft.graph.specialFolder
+        subscriptions:
+        - '@odata.type': microsoft.graph.subscription
+        thumbnails:
+        - '@odata.type': microsoft.graph.thumbnailSet
+        versions:
+        - '@odata.type': microsoft.graph.driveItemVersion
+        video:
+          '@odata.type': microsoft.graph.video
+        webDavUrl: String
+        workbook:
+          '@odata.type': microsoft.graph.workbook
+    microsoft.graph.driveItemVersion:
+      value:
+        content: Stream
+        size: '0'
+    microsoft.graph.emailAuthenticationMethod:
+      value:
+        emailAddress: String
+    microsoft.graph.employeeExperienceUser:
+      value:
+        assignedRoles:
+        - '@odata.type': microsoft.graph.engagementRole
+        learningCourseActivities:
+        - '@odata.type': microsoft.graph.learningCourseActivity
+    microsoft.graph.engagementRole:
+      value:
+        displayName: String
+        members:
+        - '@odata.type': microsoft.graph.engagementRoleMember
+    microsoft.graph.engagementRoleMember:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        user:
+          '@odata.type': microsoft.graph.user
+        userId: String
+    microsoft.graph.entity:
+      value:
+        id: String (identifier)
+    microsoft.graph.event:
+      value:
+        allowNewTimeProposals: 'true'
+        attachments:
+        - '@odata.type': microsoft.graph.attachment
+        attendees:
+        - '@odata.type': microsoft.graph.attendee
+        body:
+          '@odata.type': microsoft.graph.itemBody
+        bodyPreview: String
+        calendar:
+          '@odata.type': microsoft.graph.calendar
+        cancelledOccurrences:
+        - String
+        end:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        exceptionOccurrences:
+        - '@odata.type': microsoft.graph.event
+        extensions:
+        - '@odata.type': microsoft.graph.extension
+        hasAttachments: 'true'
+        hideAttendees: 'true'
+        iCalUId: String
+        importance:
+          '@odata.type': microsoft.graph.importance
+        instances:
+        - '@odata.type': microsoft.graph.event
+        isAllDay: 'true'
+        isCancelled: 'true'
+        isDraft: 'true'
+        isOnlineMeeting: 'true'
+        isOrganizer: 'true'
+        isReminderOn: 'true'
+        location:
+          '@odata.type': microsoft.graph.location
+        locations:
+        - '@odata.type': microsoft.graph.location
+        multiValueExtendedProperties:
+        - '@odata.type': microsoft.graph.multiValueLegacyExtendedProperty
+        onlineMeeting:
+          '@odata.type': microsoft.graph.onlineMeetingInfo
+        onlineMeetingProvider:
+          '@odata.type': microsoft.graph.onlineMeetingProviderType
+        onlineMeetingUrl: String
+        organizer:
+          '@odata.type': microsoft.graph.recipient
+        originalEndTimeZone: String
+        originalStart: '0001-01-01T00:00:00.0000000+00:00'
+        originalStartTimeZone: String
+        recurrence:
+          '@odata.type': microsoft.graph.patternedRecurrence
+        reminderMinutesBeforeStart: '0'
+        responseRequested: 'true'
+        responseStatus:
+          '@odata.type': microsoft.graph.responseStatus
+        sensitivity:
+          '@odata.type': microsoft.graph.sensitivity
+        seriesMasterId: String
+        showAs:
+          '@odata.type': microsoft.graph.freeBusyStatus
+        singleValueExtendedProperties:
+        - '@odata.type': microsoft.graph.singleValueLegacyExtendedProperty
+        start:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        subject: String
+        transactionId: String
+        type:
+          '@odata.type': microsoft.graph.eventType
+        webLink: String
+    microsoft.graph.exchangeSettings:
+      value:
+        primaryMailboxId: String
+    microsoft.graph.extension:
+      value: {}
+    microsoft.graph.externalAuthenticationMethod:
+      value:
+        configurationId: String
+        displayName: String
+    microsoft.graph.fido2AuthenticationMethod:
+      value:
+        aaGuid: String
+        attestationCertificates:
+        - String
+        attestationLevel:
+          '@odata.type': microsoft.graph.attestationLevel
+        displayName: String
+        model: String
+        passkeyType:
+          '@odata.type': microsoft.graph.passkeyType
+        publicKeyCredential:
+          '@odata.type': microsoft.graph.webauthnPublicKeyCredential
+    microsoft.graph.fieldValueSet:
+      value: {}
+    microsoft.graph.group:
+      value:
+        acceptedSenders:
+        - '@odata.type': microsoft.graph.directoryObject
+        allowExternalSenders: 'true'
+        appRoleAssignments:
+        - '@odata.type': microsoft.graph.appRoleAssignment
+        assignedLabels:
+        - '@odata.type': microsoft.graph.assignedLabel
+        assignedLicenses:
+        - '@odata.type': microsoft.graph.assignedLicense
+        autoSubscribeNewMembers: 'true'
+        calendar:
+          '@odata.type': microsoft.graph.calendar
+        calendarView:
+        - '@odata.type': microsoft.graph.event
+        classification: String
+        conversations:
+        - '@odata.type': microsoft.graph.conversation
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        createdOnBehalfOf:
+          '@odata.type': microsoft.graph.directoryObject
+        description: String
+        displayName: String
+        drive:
+          '@odata.type': microsoft.graph.drive
+        drives:
+        - '@odata.type': microsoft.graph.drive
+        events:
+        - '@odata.type': microsoft.graph.event
+        expirationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        extensions:
+        - '@odata.type': microsoft.graph.extension
+        groupLifecyclePolicies:
+        - '@odata.type': microsoft.graph.groupLifecyclePolicy
+        groupTypes:
+        - String
+        hasMembersWithLicenseErrors: 'true'
+        hideFromAddressLists: 'true'
+        hideFromOutlookClients: 'true'
+        infoCatalogs:
+        - String
+        isArchived: 'true'
+        isAssignableToRole: 'true'
+        isManagementRestricted: 'true'
+        isSubscribedByMail: 'true'
+        licenseProcessingState:
+          '@odata.type': microsoft.graph.licenseProcessingState
+        mail: String
+        mailEnabled: 'true'
+        mailNickname: String
+        memberOf:
+        - '@odata.type': microsoft.graph.directoryObject
+        members:
+        - '@odata.type': microsoft.graph.directoryObject
+        membershipRule: String
+        membershipRuleProcessingState: String
+        membersWithLicenseErrors:
+        - '@odata.type': microsoft.graph.directoryObject
+        onenote:
+          '@odata.type': microsoft.graph.onenote
+        onPremisesDomainName: String
+        onPremisesLastSyncDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        onPremisesNetBiosName: String
+        onPremisesProvisioningErrors:
+        - '@odata.type': microsoft.graph.onPremisesProvisioningError
+        onPremisesSamAccountName: String
+        onPremisesSecurityIdentifier: String
+        onPremisesSyncBehavior:
+          '@odata.type': microsoft.graph.onPremisesSyncBehavior
+        onPremisesSyncEnabled: 'true'
+        owners:
+        - '@odata.type': microsoft.graph.directoryObject
+        permissionGrants:
+        - '@odata.type': microsoft.graph.resourceSpecificPermissionGrant
+        photo:
+          '@odata.type': microsoft.graph.profilePhoto
+        photos:
+        - '@odata.type': microsoft.graph.profilePhoto
+        planner:
+          '@odata.type': microsoft.graph.plannerGroup
+        preferredDataLocation: String
+        preferredLanguage: String
+        proxyAddresses:
+        - String
+        rejectedSenders:
+        - '@odata.type': microsoft.graph.directoryObject
+        renewedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        resourceBehaviorOptions:
+        - String
+        resourceProvisioningOptions:
+        - String
+        securityEnabled: 'true'
+        securityIdentifier: String
+        serviceProvisioningErrors:
+        - '@odata.type': microsoft.graph.serviceProvisioningError
+        settings:
+        - '@odata.type': microsoft.graph.groupSetting
+        sites:
+        - '@odata.type': microsoft.graph.site
+        team:
+          '@odata.type': microsoft.graph.team
+        theme: String
+        threads:
+        - '@odata.type': microsoft.graph.conversationThread
+        transitiveMemberOf:
+        - '@odata.type': microsoft.graph.directoryObject
+        transitiveMembers:
+        - '@odata.type': microsoft.graph.directoryObject
+        uniqueName: String
+        unseenCount: '0'
+        visibility: String
+        welcomeMessageEnabled: 'true'
+    microsoft.graph.groupLifecyclePolicy:
+      value:
+        alternateNotificationEmails: String
+        groupLifetimeInDays: '0'
+        managedGroupTypes: String
+    microsoft.graph.groupSetting:
+      value:
+        displayName: String
+        templateId: String
+        values:
+        - '@odata.type': microsoft.graph.settingValue
+    microsoft.graph.horizontalSection:
+      value:
+        columns:
+        - '@odata.type': microsoft.graph.horizontalSectionColumn
+        emphasis:
+          '@odata.type': microsoft.graph.sectionEmphasisType
+        layout:
+          '@odata.type': microsoft.graph.horizontalSectionLayoutType
+    microsoft.graph.horizontalSectionColumn:
+      value:
+        webparts:
+        - '@odata.type': microsoft.graph.webPart
+        width: '0'
+    microsoft.graph.inferenceClassification:
+      value:
+        overrides:
+        - '@odata.type': microsoft.graph.inferenceClassificationOverride
+    microsoft.graph.inferenceClassificationOverride:
+      value:
+        classifyAs:
+          '@odata.type': microsoft.graph.inferenceClassificationType
+        senderEmailAddress:
+          '@odata.type': microsoft.graph.emailAddress
+    microsoft.graph.itemActivity:
+      value:
+        access:
+          '@odata.type': microsoft.graph.accessAction
+        activityDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        actor:
+          '@odata.type': microsoft.graph.identitySet
+        driveItem:
+          '@odata.type': microsoft.graph.driveItem
+    microsoft.graph.itemActivityStat:
+      value:
+        access:
+          '@odata.type': microsoft.graph.itemActionStat
+        activities:
+        - '@odata.type': microsoft.graph.itemActivity
+        create:
+          '@odata.type': microsoft.graph.itemActionStat
+        delete:
+          '@odata.type': microsoft.graph.itemActionStat
+        edit:
+          '@odata.type': microsoft.graph.itemActionStat
+        endDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        incompleteData:
+          '@odata.type': microsoft.graph.incompleteData
+        isTrending: 'true'
+        move:
+          '@odata.type': microsoft.graph.itemActionStat
+        startDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.itemAnalytics:
+      value:
+        allTime:
+          '@odata.type': microsoft.graph.itemActivityStat
+        itemActivityStats:
+        - '@odata.type': microsoft.graph.itemActivityStat
+        lastSevenDays:
+          '@odata.type': microsoft.graph.itemActivityStat
+    microsoft.graph.itemInsights:
+      value: {}
+    microsoft.graph.itemRetentionLabel:
+      value:
+        isLabelAppliedExplicitly: 'true'
+        labelAppliedBy:
+          '@odata.type': microsoft.graph.identitySet
+        labelAppliedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        name: String
+        retentionSettings:
+          '@odata.type': microsoft.graph.retentionLabelSettings
+    microsoft.graph.learningCourseActivity:
+      value:
+        completedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        completionPercentage: '0'
+        externalcourseActivityId: String
+        learnerUserId: String
+        learningContentId: String
+        learningProviderId: String
+        status:
+          '@odata.type': microsoft.graph.courseStatus
+    microsoft.graph.licenseDetails:
+      value:
+        servicePlans:
+        - '@odata.type': microsoft.graph.servicePlanInfo
+        skuId: 00000000-0000-0000-0000-000000000000
+        skuPartNumber: String
+    microsoft.graph.linkedResource:
+      value:
+        applicationName: String
+        displayName: String
+        externalId: String
+        webUrl: String
+    microsoft.graph.list:
+      value:
+        columns:
+        - '@odata.type': microsoft.graph.columnDefinition
+        contentTypes:
+        - '@odata.type': microsoft.graph.contentType
+        displayName: String
+        drive:
+          '@odata.type': microsoft.graph.drive
+        items:
+        - '@odata.type': microsoft.graph.listItem
+        list:
+          '@odata.type': microsoft.graph.listInfo
+        operations:
+        - '@odata.type': microsoft.graph.richLongRunningOperation
+        sharepointIds:
+          '@odata.type': microsoft.graph.sharepointIds
+        subscriptions:
+        - '@odata.type': microsoft.graph.subscription
+        system:
+          '@odata.type': microsoft.graph.systemFacet
+    microsoft.graph.listItem:
+      value:
+        analytics:
+          '@odata.type': microsoft.graph.itemAnalytics
+        contentType:
+          '@odata.type': microsoft.graph.contentTypeInfo
+        deleted:
+          '@odata.type': microsoft.graph.deleted
+        documentSetVersions:
+        - '@odata.type': microsoft.graph.documentSetVersion
+        driveItem:
+          '@odata.type': microsoft.graph.driveItem
+        fields:
+          '@odata.type': microsoft.graph.fieldValueSet
+        sharepointIds:
+          '@odata.type': microsoft.graph.sharepointIds
+        versions:
+        - '@odata.type': microsoft.graph.listItemVersion
+    microsoft.graph.listItemVersion:
+      value:
+        fields:
+          '@odata.type': microsoft.graph.fieldValueSet
+    microsoft.graph.longRunningOperation:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastActionDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        resourceLocation: String
+        status:
+          '@odata.type': microsoft.graph.longRunningOperationStatus
+        statusDetail: String
+    microsoft.graph.mailFolder:
+      value:
+        childFolderCount: '0'
+        childFolders:
+        - '@odata.type': microsoft.graph.mailFolder
+        displayName: String
+        isHidden: 'true'
+        messageRules:
+        - '@odata.type': microsoft.graph.messageRule
+        messages:
+        - '@odata.type': microsoft.graph.message
+        multiValueExtendedProperties:
+        - '@odata.type': microsoft.graph.multiValueLegacyExtendedProperty
+        parentFolderId: String
+        singleValueExtendedProperties:
+        - '@odata.type': microsoft.graph.singleValueLegacyExtendedProperty
+        totalItemCount: '0'
+        unreadItemCount: '0'
+    microsoft.graph.managedAppOperation:
+      value:
+        displayName: String
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        state: String
+        version: String
+    microsoft.graph.managedAppPolicy:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        description: String
+        displayName: String
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        version: String
+    microsoft.graph.managedAppRegistration:
+      value:
+        appIdentifier:
+          '@odata.type': microsoft.graph.mobileAppIdentifier
+        applicationVersion: String
+        appliedPolicies:
+        - '@odata.type': microsoft.graph.managedAppPolicy
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        deviceName: String
+        deviceTag: String
+        deviceType: String
+        flaggedReasons:
+        - '@odata.type': microsoft.graph.managedAppFlaggedReason
+        intendedPolicies:
+        - '@odata.type': microsoft.graph.managedAppPolicy
+        lastSyncDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        managementSdkVersion: String
+        operations:
+        - '@odata.type': microsoft.graph.managedAppOperation
+        platformVersion: String
+        userId: String
+        version: String
+    microsoft.graph.managedDevice:
+      value:
+        activationLockBypassCode: String
+        androidSecurityPatchLevel: String
+        azureADDeviceId: String
+        azureADRegistered: 'true'
+        complianceGracePeriodExpirationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        complianceState:
+          '@odata.type': microsoft.graph.complianceState
+        configurationManagerClientEnabledFeatures:
+          '@odata.type': microsoft.graph.configurationManagerClientEnabledFeatures
+        deviceActionResults:
+        - '@odata.type': microsoft.graph.deviceActionResult
+        deviceCategory:
+          '@odata.type': microsoft.graph.deviceCategory
+        deviceCategoryDisplayName: String
+        deviceCompliancePolicyStates:
+        - '@odata.type': microsoft.graph.deviceCompliancePolicyState
+        deviceConfigurationStates:
+        - '@odata.type': microsoft.graph.deviceConfigurationState
+        deviceEnrollmentType:
+          '@odata.type': microsoft.graph.deviceEnrollmentType
+        deviceHealthAttestationState:
+          '@odata.type': microsoft.graph.deviceHealthAttestationState
+        deviceName: String
+        deviceRegistrationState:
+          '@odata.type': microsoft.graph.deviceRegistrationState
+        easActivated: 'true'
+        easActivationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        easDeviceId: String
+        emailAddress: String
+        enrolledDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        enrollmentProfileName: String
+        ethernetMacAddress: String
+        exchangeAccessState:
+          '@odata.type': microsoft.graph.deviceManagementExchangeAccessState
+        exchangeAccessStateReason:
+          '@odata.type': microsoft.graph.deviceManagementExchangeAccessStateReason
+        exchangeLastSuccessfulSyncDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        freeStorageSpaceInBytes: '0'
+        iccid: String
+        imei: String
+        isEncrypted: 'true'
+        isSupervised: 'true'
+        jailBroken: String
+        lastSyncDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        logCollectionRequests:
+        - '@odata.type': microsoft.graph.deviceLogCollectionResponse
+        managedDeviceName: String
+        managedDeviceOwnerType:
+          '@odata.type': microsoft.graph.managedDeviceOwnerType
+        managementAgent:
+          '@odata.type': microsoft.graph.managementAgentType
+        managementCertificateExpirationDate: '0001-01-01T00:00:00.0000000+00:00'
+        managementState:
+          '@odata.type': microsoft.graph.managementState
+        manufacturer: String
+        meid: String
+        model: String
+        notes: String
+        operatingSystem: String
+        osVersion: String
+        partnerReportedThreatState:
+          '@odata.type': microsoft.graph.managedDevicePartnerReportedHealthState
+        phoneNumber: String
+        physicalMemoryInBytes: '0'
+        remoteAssistanceSessionErrorDetails: String
+        remoteAssistanceSessionUrl: String
+        requireUserEnrollmentApproval: 'true'
+        serialNumber: String
+        subscriberCarrier: String
+        totalStorageSpaceInBytes: '0'
+        udid: String
+        userDisplayName: String
+        userId: String
+        userPrincipalName: String
+        users:
+        - '@odata.type': microsoft.graph.user
+        wiFiMacAddress: String
+        windowsProtectionState:
+          '@odata.type': microsoft.graph.windowsProtectionState
+    microsoft.graph.meetingAttendanceReport:
+      value:
+        attendanceRecords:
+        - '@odata.type': microsoft.graph.attendanceRecord
+        externalEventInformation:
+        - '@odata.type': microsoft.graph.virtualEventExternalInformation
+        meetingEndDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        meetingStartDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        totalParticipantCount: '0'
+    microsoft.graph.message:
+      value:
+        attachments:
+        - '@odata.type': microsoft.graph.attachment
+        bccRecipients:
+        - '@odata.type': microsoft.graph.recipient
+        body:
+          '@odata.type': microsoft.graph.itemBody
+        bodyPreview: String
+        ccRecipients:
+        - '@odata.type': microsoft.graph.recipient
+        conversationId: String
+        conversationIndex: AA==
+        extensions:
+        - '@odata.type': microsoft.graph.extension
+        flag:
+          '@odata.type': microsoft.graph.followupFlag
+        from:
+          '@odata.type': microsoft.graph.recipient
+        hasAttachments: 'true'
+        importance:
+          '@odata.type': microsoft.graph.importance
+        inferenceClassification:
+          '@odata.type': microsoft.graph.inferenceClassificationType
+        internetMessageHeaders:
+        - '@odata.type': microsoft.graph.internetMessageHeader
+        internetMessageId: String
+        isDeliveryReceiptRequested: 'true'
+        isDraft: 'true'
+        isRead: 'true'
+        isReadReceiptRequested: 'true'
+        multiValueExtendedProperties:
+        - '@odata.type': microsoft.graph.multiValueLegacyExtendedProperty
+        parentFolderId: String
+        receivedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        replyTo:
+        - '@odata.type': microsoft.graph.recipient
+        sender:
+          '@odata.type': microsoft.graph.recipient
+        sentDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        singleValueExtendedProperties:
+        - '@odata.type': microsoft.graph.singleValueLegacyExtendedProperty
+        subject: String
+        toRecipients:
+        - '@odata.type': microsoft.graph.recipient
+        uniqueBody:
+          '@odata.type': microsoft.graph.itemBody
+        webLink: String
+    microsoft.graph.messageRule:
+      value:
+        actions:
+          '@odata.type': microsoft.graph.messageRuleActions
+        conditions:
+          '@odata.type': microsoft.graph.messageRulePredicates
+        displayName: String
+        exceptions:
+          '@odata.type': microsoft.graph.messageRulePredicates
+        hasError: 'true'
+        isEnabled: 'true'
+        isReadOnly: 'true'
+        sequence: '0'
+    microsoft.graph.microsoftAuthenticatorAuthenticationMethod:
+      value:
+        device:
+          '@odata.type': microsoft.graph.device
+        deviceTag: String
+        displayName: String
+        phoneAppVersion: String
+    microsoft.graph.multiValueLegacyExtendedProperty:
+      value:
+        value:
+        - String
+    microsoft.graph.notebook:
+      value:
+        isDefault: 'true'
+        isShared: 'true'
+        links:
+          '@odata.type': microsoft.graph.notebookLinks
+        sectionGroups:
+        - '@odata.type': microsoft.graph.sectionGroup
+        sectionGroupsUrl: String
+        sections:
+        - '@odata.type': microsoft.graph.onenoteSection
+        sectionsUrl: String
+        userRole:
+          '@odata.type': microsoft.graph.onenoteUserRole
+    microsoft.graph.oAuth2PermissionGrant:
+      value:
+        clientId: String
+        consentType: String
+        principalId: String
+        resourceId: String
+        scope: String
+    microsoft.graph.offerShiftRequest:
+      value:
+        recipientActionDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        recipientActionMessage: String
+        recipientUserId: String
+        senderShiftId: String
+    microsoft.graph.officeGraphInsights:
+      value:
+        shared:
+        - '@odata.type': microsoft.graph.sharedInsight
+        trending:
+        - '@odata.type': microsoft.graph.trending
+        used:
+        - '@odata.type': microsoft.graph.usedInsight
+    microsoft.graph.onenote:
+      value:
+        notebooks:
+        - '@odata.type': microsoft.graph.notebook
+        operations:
+        - '@odata.type': microsoft.graph.onenoteOperation
+        pages:
+        - '@odata.type': microsoft.graph.onenotePage
+        resources:
+        - '@odata.type': microsoft.graph.onenoteResource
+        sectionGroups:
+        - '@odata.type': microsoft.graph.sectionGroup
+        sections:
+        - '@odata.type': microsoft.graph.onenoteSection
+    microsoft.graph.onenoteEntityBaseModel:
+      value:
+        self: String
+    microsoft.graph.onenoteEntityHierarchyModel:
+      value:
+        createdBy:
+          '@odata.type': microsoft.graph.identitySet
+        displayName: String
+        lastModifiedBy:
+          '@odata.type': microsoft.graph.identitySet
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.onenoteEntitySchemaObjectModel:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.onenoteOperation:
+      value:
+        error:
+          '@odata.type': microsoft.graph.onenoteOperationError
+        percentComplete: String
+        resourceId: String
+        resourceLocation: String
+    microsoft.graph.onenotePage:
+      value:
+        content: Stream
+        contentUrl: String
+        createdByAppId: String
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        level: '0'
+        links:
+          '@odata.type': microsoft.graph.pageLinks
+        order: '0'
+        parentNotebook:
+          '@odata.type': microsoft.graph.notebook
+        parentSection:
+          '@odata.type': microsoft.graph.onenoteSection
+        title: String
+        userTags:
+        - String
+    microsoft.graph.onenoteResource:
+      value:
+        content: Stream
+        contentUrl: String
+    microsoft.graph.onenoteSection:
+      value:
+        isDefault: 'true'
+        links:
+          '@odata.type': microsoft.graph.sectionLinks
+        pages:
+        - '@odata.type': microsoft.graph.onenotePage
+        pagesUrl: String
+        parentNotebook:
+          '@odata.type': microsoft.graph.notebook
+        parentSectionGroup:
+          '@odata.type': microsoft.graph.sectionGroup
+    microsoft.graph.onlineMeeting:
+      value:
+        attendeeReport: Stream
+        broadcastSettings:
+          '@odata.type': microsoft.graph.broadcastMeetingSettings
+        creationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        endDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        externalId: String
+        isBroadcast: 'true'
+        meetingTemplateId: String
+        participants:
+          '@odata.type': microsoft.graph.meetingParticipants
+        recordings:
+        - '@odata.type': microsoft.graph.callRecording
+        startDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        transcripts:
+        - '@odata.type': microsoft.graph.callTranscript
+    microsoft.graph.onlineMeetingBase:
+      value:
+        allowAttendeeToEnableCamera: 'true'
+        allowAttendeeToEnableMic: 'true'
+        allowBreakoutRooms: 'true'
+        allowCopyingAndSharingMeetingContent: 'true'
+        allowedLobbyAdmitters:
+          '@odata.type': microsoft.graph.allowedLobbyAdmitterRoles
+        allowedPresenters:
+          '@odata.type': microsoft.graph.onlineMeetingPresenters
+        allowLiveShare:
+          '@odata.type': microsoft.graph.meetingLiveShareOptions
+        allowMeetingChat:
+          '@odata.type': microsoft.graph.meetingChatMode
+        allowParticipantsToChangeName: 'true'
+        allowPowerPointSharing: 'true'
+        allowRecording: 'true'
+        allowTeamworkReactions: 'true'
+        allowTranscription: 'true'
+        allowWhiteboard: 'true'
+        attendanceReports:
+        - '@odata.type': microsoft.graph.meetingAttendanceReport
+        audioConferencing:
+          '@odata.type': microsoft.graph.audioConferencing
+        chatInfo:
+          '@odata.type': microsoft.graph.chatInfo
+        chatRestrictions:
+          '@odata.type': microsoft.graph.chatRestrictions
+        expiryDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        isEndToEndEncryptionEnabled: 'true'
+        isEntryExitAnnounced: 'true'
+        joinInformation:
+          '@odata.type': microsoft.graph.itemBody
+        joinMeetingIdSettings:
+          '@odata.type': microsoft.graph.joinMeetingIdSettings
+        joinWebUrl: String
+        lobbyBypassSettings:
+          '@odata.type': microsoft.graph.lobbyBypassSettings
+        meetingOptionsWebUrl: String
+        meetingSpokenLanguageTag: String
+        recordAutomatically: 'true'
+        sensitivityLabelAssignment:
+          '@odata.type': microsoft.graph.onlineMeetingSensitivityLabelAssignment
+        shareMeetingChatHistoryDefault:
+          '@odata.type': microsoft.graph.meetingChatHistoryDefaultMode
+        subject: String
+        videoTeleconferenceId: String
+        watermarkProtection:
+          '@odata.type': microsoft.graph.watermarkProtectionValues
+    microsoft.graph.onPremisesSyncBehavior:
+      value:
+        isCloudManaged: 'true'
+    microsoft.graph.openShift:
+      value:
+        draftOpenShift:
+          '@odata.type': microsoft.graph.openShiftItem
+        isStagedForDeletion: 'true'
+        schedulingGroupId: String
+        sharedOpenShift:
+          '@odata.type': microsoft.graph.openShiftItem
+    microsoft.graph.openShiftChangeRequest:
+      value:
+        openShiftId: String
+    microsoft.graph.operation:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastActionDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        status:
+          '@odata.type': microsoft.graph.operationStatus
+    microsoft.graph.outlookCategory:
+      value:
+        color:
+          '@odata.type': microsoft.graph.categoryColor
+        displayName: String
+    microsoft.graph.outlookItem:
+      value:
+        categories:
+        - String
+        changeKey: String
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.outlookUser:
+      value:
+        masterCategories:
+        - '@odata.type': microsoft.graph.outlookCategory
+    microsoft.graph.passwordAuthenticationMethod:
+      value:
+        password: String
+    microsoft.graph.permission:
+      value:
+        expirationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        grantedTo:
+          '@odata.type': microsoft.graph.identitySet
+        grantedToIdentities:
+        - '@odata.type': microsoft.graph.identitySet
+        grantedToIdentitiesV2:
+        - '@odata.type': microsoft.graph.sharePointIdentitySet
+        grantedToV2:
+          '@odata.type': microsoft.graph.sharePointIdentitySet
+        hasPassword: 'true'
+        inheritedFrom:
+          '@odata.type': microsoft.graph.itemReference
+        invitation:
+          '@odata.type': microsoft.graph.sharingInvitation
+        link:
+          '@odata.type': microsoft.graph.sharingLink
+        roles:
+        - String
+        shareId: String
+    microsoft.graph.person:
+      value:
+        birthday: String
+        companyName: String
+        department: String
+        displayName: String
+        givenName: String
+        imAddress: String
+        isFavorite: 'true'
+        jobTitle: String
+        officeLocation: String
+        personNotes: String
+        personType:
+          '@odata.type': microsoft.graph.personType
+        phones:
+        - '@odata.type': microsoft.graph.phone
+        postalAddresses:
+        - '@odata.type': microsoft.graph.location
+        profession: String
+        scoredEmailAddresses:
+        - '@odata.type': microsoft.graph.scoredEmailAddress
+        surname: String
+        userPrincipalName: String
+        websites:
+        - '@odata.type': microsoft.graph.website
+        yomiCompany: String
+    microsoft.graph.phoneAuthenticationMethod:
+      value:
+        phoneNumber: String
+        phoneType:
+          '@odata.type': microsoft.graph.authenticationPhoneType
+        smsSignInState:
+          '@odata.type': microsoft.graph.authenticationMethodSignInState
+    microsoft.graph.pinnedChatMessageInfo:
+      value:
+        message:
+          '@odata.type': microsoft.graph.chatMessage
+    microsoft.graph.plannerAssignedToTaskBoardTaskFormat:
+      value:
+        orderHintsByAssignee:
+          '@odata.type': microsoft.graph.plannerOrderHintsByAssignee
+        unassignedOrderHint: String
+    microsoft.graph.plannerBucket:
+      value:
+        name: String
+        orderHint: String
+        planId: String
+        tasks:
+        - '@odata.type': microsoft.graph.plannerTask
+    microsoft.graph.plannerBucketTaskBoardTaskFormat:
+      value:
+        orderHint: String
+    microsoft.graph.plannerGroup:
+      value:
+        plans:
+        - '@odata.type': microsoft.graph.plannerPlan
+    microsoft.graph.plannerPlan:
+      value:
+        buckets:
+        - '@odata.type': microsoft.graph.plannerBucket
+        container:
+          '@odata.type': microsoft.graph.plannerPlanContainer
+        createdBy:
+          '@odata.type': microsoft.graph.identitySet
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        details:
+          '@odata.type': microsoft.graph.plannerPlanDetails
+        owner: String
+        tasks:
+        - '@odata.type': microsoft.graph.plannerTask
+        title: String
+    microsoft.graph.plannerPlanDetails:
+      value:
+        categoryDescriptions:
+          '@odata.type': microsoft.graph.plannerCategoryDescriptions
+        sharedWith:
+          '@odata.type': microsoft.graph.plannerUserIds
+    microsoft.graph.plannerProgressTaskBoardTaskFormat:
+      value:
+        orderHint: String
+    microsoft.graph.plannerTask:
+      value:
+        activeChecklistItemCount: '0'
+        appliedCategories:
+          '@odata.type': microsoft.graph.plannerAppliedCategories
+        assignedToTaskBoardFormat:
+          '@odata.type': microsoft.graph.plannerAssignedToTaskBoardTaskFormat
+        assigneePriority: String
+        assignments:
+          '@odata.type': microsoft.graph.plannerAssignments
+        bucketId: String
+        bucketTaskBoardFormat:
+          '@odata.type': microsoft.graph.plannerBucketTaskBoardTaskFormat
+        checklistItemCount: '0'
+        completedBy:
+          '@odata.type': microsoft.graph.identitySet
+        completedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        conversationThreadId: String
+        createdBy:
+          '@odata.type': microsoft.graph.identitySet
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        details:
+          '@odata.type': microsoft.graph.plannerTaskDetails
+        dueDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        hasDescription: 'true'
+        orderHint: String
+        percentComplete: '0'
+        planId: String
+        previewType:
+          '@odata.type': microsoft.graph.plannerPreviewType
+        priority: '0'
+        progressTaskBoardFormat:
+          '@odata.type': microsoft.graph.plannerProgressTaskBoardTaskFormat
+        referenceCount: '0'
+        startDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        title: String
+    microsoft.graph.plannerTaskDetails:
+      value:
+        checklist:
+          '@odata.type': microsoft.graph.plannerChecklistItems
+        description: String
+        previewType:
+          '@odata.type': microsoft.graph.plannerPreviewType
+        references:
+          '@odata.type': microsoft.graph.plannerExternalReferences
+    microsoft.graph.plannerUser:
+      value:
+        plans:
+        - '@odata.type': microsoft.graph.plannerPlan
+        tasks:
+        - '@odata.type': microsoft.graph.plannerTask
+    microsoft.graph.platformCredentialAuthenticationMethod:
+      value:
+        device:
+          '@odata.type': microsoft.graph.device
+        displayName: String
+        keyStrength:
+          '@odata.type': microsoft.graph.authenticationMethodKeyStrength
+        platform:
+          '@odata.type': microsoft.graph.authenticationMethodPlatform
+    microsoft.graph.post:
+      value:
+        attachments:
+        - '@odata.type': microsoft.graph.attachment
+        body:
+          '@odata.type': microsoft.graph.itemBody
+        conversationId: String
+        conversationThreadId: String
+        extensions:
+        - '@odata.type': microsoft.graph.extension
+        from:
+          '@odata.type': microsoft.graph.recipient
+        hasAttachments: 'true'
+        inReplyTo:
+          '@odata.type': microsoft.graph.post
+        multiValueExtendedProperties:
+        - '@odata.type': microsoft.graph.multiValueLegacyExtendedProperty
+        newParticipants:
+        - '@odata.type': microsoft.graph.recipient
+        receivedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        sender:
+          '@odata.type': microsoft.graph.recipient
+        singleValueExtendedProperties:
+        - '@odata.type': microsoft.graph.singleValueLegacyExtendedProperty
+    microsoft.graph.presence:
+      value:
+        activity: String
+        availability: String
+        outOfOfficeSettings:
+          '@odata.type': microsoft.graph.outOfOfficeSettings
+        sequenceNumber: String
+        statusMessage:
+          '@odata.type': microsoft.graph.presenceStatusMessage
+        workLocation:
+          '@odata.type': microsoft.graph.userWorkLocation
+    microsoft.graph.printConnector:
+      value:
+        appVersion: String
+        displayName: String
+        fullyQualifiedDomainName: String
+        location:
+          '@odata.type': microsoft.graph.printerLocation
+        operatingSystem: String
+        registeredDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.printDocument:
+      value:
+        contentType: String
+        displayName: String
+        downloadedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        size: '0'
+        uploadedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.printer:
+      value:
+        connectors:
+        - '@odata.type': microsoft.graph.printConnector
+        hasPhysicalDevice: 'true'
+        isShared: 'true'
+        lastSeenDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        registeredDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        shares:
+        - '@odata.type': microsoft.graph.printerShare
+        taskTriggers:
+        - '@odata.type': microsoft.graph.printTaskTrigger
+    microsoft.graph.printerBase:
+      value:
+        capabilities:
+          '@odata.type': microsoft.graph.printerCapabilities
+        defaults:
+          '@odata.type': microsoft.graph.printerDefaults
+        displayName: String
+        isAcceptingJobs: 'true'
+        jobs:
+        - '@odata.type': microsoft.graph.printJob
+        location:
+          '@odata.type': microsoft.graph.printerLocation
+        manufacturer: String
+        model: String
+        status:
+          '@odata.type': microsoft.graph.printerStatus
+    microsoft.graph.printerShare:
+      value:
+        allowAllUsers: 'true'
+        allowedGroups:
+        - '@odata.type': microsoft.graph.group
+        allowedUsers:
+        - '@odata.type': microsoft.graph.user
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        printer:
+          '@odata.type': microsoft.graph.printer
+        viewPoint:
+          '@odata.type': microsoft.graph.printerShareViewpoint
+    microsoft.graph.printJob:
+      value:
+        acknowledgedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        configuration:
+          '@odata.type': microsoft.graph.printJobConfiguration
+        createdBy:
+          '@odata.type': microsoft.graph.userIdentity
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        documents:
+        - '@odata.type': microsoft.graph.printDocument
+        errorCode: '0'
+        isFetchable: 'true'
+        redirectedFrom: String
+        redirectedTo: String
+        status:
+          '@odata.type': microsoft.graph.printJobStatus
+        tasks:
+        - '@odata.type': microsoft.graph.printTask
+    microsoft.graph.printTask:
+      value:
+        definition:
+          '@odata.type': microsoft.graph.printTaskDefinition
+        parentUrl: String
+        status:
+          '@odata.type': microsoft.graph.printTaskStatus
+        trigger:
+          '@odata.type': microsoft.graph.printTaskTrigger
+    microsoft.graph.printTaskDefinition:
+      value:
+        createdBy:
+          '@odata.type': microsoft.graph.appIdentity
+        displayName: String
+        tasks:
+        - '@odata.type': microsoft.graph.printTask
+    microsoft.graph.printTaskTrigger:
+      value:
+        definition:
+          '@odata.type': microsoft.graph.printTaskDefinition
+        event:
+          '@odata.type': microsoft.graph.printEvent
+    microsoft.graph.profilePhoto:
+      value:
+        height: '0'
+        width: '0'
+    microsoft.graph.recycleBin:
+      value:
+        items:
+        - '@odata.type': microsoft.graph.recycleBinItem
+        settings:
+          '@odata.type': microsoft.graph.recycleBinSettings
+    microsoft.graph.recycleBinItem:
+      value:
+        deletedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        deletedFromLocation: String
+        size: '0'
+    microsoft.graph.resourceSpecificPermissionGrant:
+      value:
+        clientAppId: String
+        clientId: String
+        permission: String
+        permissionType: String
+        resourceAppId: String
+    microsoft.graph.richLongRunningOperation:
+      value:
+        error:
+          '@odata.type': microsoft.graph.publicError
+        percentageComplete: '0'
+        resourceId: String
+        type: String
+    microsoft.graph.schedule:
+      value:
+        dayNotes:
+        - '@odata.type': microsoft.graph.dayNote
+        enabled: 'true'
+        isActivitiesIncludedWhenCopyingShiftsEnabled: 'true'
+        offerShiftRequests:
+        - '@odata.type': microsoft.graph.offerShiftRequest
+        offerShiftRequestsEnabled: 'true'
+        openShiftChangeRequests:
+        - '@odata.type': microsoft.graph.openShiftChangeRequest
+        openShifts:
+        - '@odata.type': microsoft.graph.openShift
+        openShiftsEnabled: 'true'
+        provisionStatus:
+          '@odata.type': microsoft.graph.operationStatus
+        provisionStatusCode: String
+        schedulingGroups:
+        - '@odata.type': microsoft.graph.schedulingGroup
+        shifts:
+        - '@odata.type': microsoft.graph.shift
+        startDayOfWeek:
+          '@odata.type': microsoft.graph.dayOfWeek
+        swapShiftsChangeRequests:
+        - '@odata.type': microsoft.graph.swapShiftsChangeRequest
+        swapShiftsRequestsEnabled: 'true'
+        timeCards:
+        - '@odata.type': microsoft.graph.timeCard
+        timeClockEnabled: 'true'
+        timeClockSettings:
+          '@odata.type': microsoft.graph.timeClockSettings
+        timeOffReasons:
+        - '@odata.type': microsoft.graph.timeOffReason
+        timeOffRequests:
+        - '@odata.type': microsoft.graph.timeOffRequest
+        timeOffRequestsEnabled: 'true'
+        timesOff:
+        - '@odata.type': microsoft.graph.timeOff
+        timeZone: String
+        workforceIntegrationIds:
+        - String
+    microsoft.graph.scheduleChangeRequest:
+      value:
+        assignedTo:
+          '@odata.type': microsoft.graph.scheduleChangeRequestActor
+        managerActionDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        managerActionMessage: String
+        managerUserId: String
+        senderDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        senderMessage: String
+        senderUserId: String
+        state:
+          '@odata.type': microsoft.graph.scheduleChangeState
+    microsoft.graph.schedulingGroup:
+      value:
+        code: String
+        displayName: String
+        isActive: 'true'
+        userIds:
+        - String
+    microsoft.graph.scopedRoleMembership:
+      value:
+        administrativeUnitId: String
+        roleId: String
+        roleMemberInfo:
+          '@odata.type': microsoft.graph.identity
+    microsoft.graph.sectionGroup:
+      value:
+        parentNotebook:
+          '@odata.type': microsoft.graph.notebook
+        parentSectionGroup:
+          '@odata.type': microsoft.graph.sectionGroup
+        sectionGroups:
+        - '@odata.type': microsoft.graph.sectionGroup
+        sectionGroupsUrl: String
+        sections:
+        - '@odata.type': microsoft.graph.onenoteSection
+        sectionsUrl: String
+    microsoft.graph.sensitivityLabel:
+      value:
+        actionSource:
+          '@odata.type': microsoft.graph.labelActionSource
+        autoTooltip: String
+        description: String
+        displayName: String
+        hasProtection: 'true'
+        isDefault: 'true'
+        isEndpointProtectionEnabled: 'true'
+        isScopedToUser: 'true'
+        locale: String
+        name: String
+        priority: '0'
+        rights:
+          '@odata.type': microsoft.graph.usageRightsIncluded
+        sublabels:
+        - '@odata.type': microsoft.graph.sensitivityLabel
+        toolTip: String
+    microsoft.graph.serviceStorageQuotaBreakdown:
+      value: {}
+    microsoft.graph.sharedDriveItem:
+      value:
+        driveItem:
+          '@odata.type': microsoft.graph.driveItem
+        items:
+        - '@odata.type': microsoft.graph.driveItem
+        list:
+          '@odata.type': microsoft.graph.list
+        listItem:
+          '@odata.type': microsoft.graph.listItem
+        owner:
+          '@odata.type': microsoft.graph.identitySet
+        permission:
+          '@odata.type': microsoft.graph.permission
+        root:
+          '@odata.type': microsoft.graph.driveItem
+        site:
+          '@odata.type': microsoft.graph.site
+    microsoft.graph.sharedInsight:
+      value:
+        lastShared:
+          '@odata.type': microsoft.graph.sharingDetail
+        lastSharedMethod:
+          '@odata.type': microsoft.graph.entity
+        resource:
+          '@odata.type': microsoft.graph.entity
+        resourceReference:
+          '@odata.type': microsoft.graph.resourceReference
+        resourceVisualization:
+          '@odata.type': microsoft.graph.resourceVisualization
+        sharingHistory:
+        - '@odata.type': microsoft.graph.sharingDetail
+    microsoft.graph.sharedWithChannelTeamInfo:
+      value:
+        allowedMembers:
+        - '@odata.type': microsoft.graph.conversationMember
+        isHostTeam: 'true'
+    microsoft.graph.shift:
+      value:
+        draftShift:
+          '@odata.type': microsoft.graph.shiftItem
+        isStagedForDeletion: 'true'
+        schedulingGroupId: String
+        sharedShift:
+          '@odata.type': microsoft.graph.shiftItem
+        userId: String
+    microsoft.graph.shiftPreferences:
+      value:
+        availability:
+        - '@odata.type': microsoft.graph.shiftAvailability
+    microsoft.graph.singleValueLegacyExtendedProperty:
+      value:
+        value: String
+    microsoft.graph.site:
+      value:
+        analytics:
+          '@odata.type': microsoft.graph.itemAnalytics
+        columns:
+        - '@odata.type': microsoft.graph.columnDefinition
+        contentTypes:
+        - '@odata.type': microsoft.graph.contentType
+        displayName: String
+        drive:
+          '@odata.type': microsoft.graph.drive
+        drives:
+        - '@odata.type': microsoft.graph.drive
+        error:
+          '@odata.type': microsoft.graph.publicError
+        externalColumns:
+        - '@odata.type': microsoft.graph.columnDefinition
+        isPersonalSite: 'true'
+        items:
+        - '@odata.type': microsoft.graph.baseItem
+        lists:
+        - '@odata.type': microsoft.graph.list
+        onenote:
+          '@odata.type': microsoft.graph.onenote
+        operations:
+        - '@odata.type': microsoft.graph.richLongRunningOperation
+        pages:
+        - '@odata.type': microsoft.graph.baseSitePage
+        permissions:
+        - '@odata.type': microsoft.graph.permission
+        root:
+          '@odata.type': microsoft.graph.root
+        sharepointIds:
+          '@odata.type': microsoft.graph.sharepointIds
+        siteCollection:
+          '@odata.type': microsoft.graph.siteCollection
+        sites:
+        - '@odata.type': microsoft.graph.site
+        termStore:
+          '@odata.type': microsoft.graph.termStore.store
+        termStores:
+        - '@odata.type': microsoft.graph.termStore.store
+    microsoft.graph.sitePage:
+      value:
+        canvasLayout:
+          '@odata.type': microsoft.graph.canvasLayout
+        promotionKind:
+          '@odata.type': microsoft.graph.pagePromotionType
+        reactions:
+          '@odata.type': microsoft.graph.reactionsFacet
+        showComments: 'true'
+        showRecommendedPages: 'true'
+        thumbnailWebUrl: String
+        titleArea:
+          '@odata.type': microsoft.graph.titleArea
+        webParts:
+        - '@odata.type': microsoft.graph.webPart
+    microsoft.graph.softwareOathAuthenticationMethod:
+      value:
+        secretKey: String
+    microsoft.graph.storageQuotaBreakdown:
+      value:
+        displayName: String
+        manageWebUrl: String
+        used: '0'
+    microsoft.graph.subscription:
+      value:
+        applicationId: String
+        changeType: String
+        clientState: String
+        creatorId: String
+        encryptionCertificate: String
+        encryptionCertificateId: String
+        expirationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        includeResourceData: 'true'
+        latestSupportedTlsVersion: String
+        lifecycleNotificationUrl: String
+        notificationQueryOptions: String
+        notificationUrl: String
+        notificationUrlAppId: String
+        resource: String
+    microsoft.graph.swapShiftsChangeRequest:
+      value:
+        recipientShiftId: String
+    microsoft.graph.targetedChatMessage:
+      value:
+        recipient:
+          '@odata.type': microsoft.graph.identity
+    microsoft.graph.team:
+      value:
+        allChannels:
+        - '@odata.type': microsoft.graph.channel
+        channels:
+        - '@odata.type': microsoft.graph.channel
+        classification: String
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        description: String
+        displayName: String
+        firstChannelName: String
+        funSettings:
+          '@odata.type': microsoft.graph.teamFunSettings
+        group:
+          '@odata.type': microsoft.graph.group
+        guestSettings:
+          '@odata.type': microsoft.graph.teamGuestSettings
+        incomingChannels:
+        - '@odata.type': microsoft.graph.channel
+        installedApps:
+        - '@odata.type': microsoft.graph.teamsAppInstallation
+        internalId: String
+        isArchived: 'true'
+        members:
+        - '@odata.type': microsoft.graph.conversationMember
+        memberSettings:
+          '@odata.type': microsoft.graph.teamMemberSettings
+        messagingSettings:
+          '@odata.type': microsoft.graph.teamMessagingSettings
+        operations:
+        - '@odata.type': microsoft.graph.teamsAsyncOperation
+        permissionGrants:
+        - '@odata.type': microsoft.graph.resourceSpecificPermissionGrant
+        photo:
+          '@odata.type': microsoft.graph.profilePhoto
+        primaryChannel:
+          '@odata.type': microsoft.graph.channel
+        schedule:
+          '@odata.type': microsoft.graph.schedule
+        specialization:
+          '@odata.type': microsoft.graph.teamSpecialization
+        summary:
+          '@odata.type': microsoft.graph.teamSummary
+        tags:
+        - '@odata.type': microsoft.graph.teamworkTag
+        template:
+          '@odata.type': microsoft.graph.teamsTemplate
+        tenantId: String
+        visibility:
+          '@odata.type': microsoft.graph.teamVisibilityType
+        webUrl: String
+    microsoft.graph.teamInfo:
+      value:
+        displayName: String
+        team:
+          '@odata.type': microsoft.graph.team
+        tenantId: String
+    microsoft.graph.teamsApp:
+      value:
+        appDefinitions:
+        - '@odata.type': microsoft.graph.teamsAppDefinition
+        displayName: String
+        distributionMethod:
+          '@odata.type': microsoft.graph.teamsAppDistributionMethod
+        externalId: String
+    microsoft.graph.teamsAppDefinition:
+      value:
+        authorization:
+          '@odata.type': microsoft.graph.teamsAppAuthorization
+        bot:
+          '@odata.type': microsoft.graph.teamworkBot
+        createdBy:
+          '@odata.type': microsoft.graph.identitySet
+        description: String
+        displayName: String
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        publishingState:
+          '@odata.type': microsoft.graph.teamsAppPublishingState
+        shortDescription: String
+        teamsAppId: String
+        version: String
+    microsoft.graph.teamsAppInstallation:
+      value:
+        consentedPermissionSet:
+          '@odata.type': microsoft.graph.teamsAppPermissionSet
+        teamsApp:
+          '@odata.type': microsoft.graph.teamsApp
+        teamsAppDefinition:
+          '@odata.type': microsoft.graph.teamsAppDefinition
+    microsoft.graph.teamsAsyncOperation:
+      value:
+        attemptsCount: '0'
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        error:
+          '@odata.type': microsoft.graph.operationError
+        lastActionDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        operationType:
+          '@odata.type': microsoft.graph.teamsAsyncOperationType
+        status:
+          '@odata.type': microsoft.graph.teamsAsyncOperationStatus
+        targetResourceId: String
+        targetResourceLocation: String
+    microsoft.graph.teamsTab:
+      value:
+        configuration:
+          '@odata.type': microsoft.graph.teamsTabConfiguration
+        displayName: String
+        teamsApp:
+          '@odata.type': microsoft.graph.teamsApp
+        webUrl: String
+    microsoft.graph.teamsTemplate:
+      value: {}
+    microsoft.graph.teamworkBot:
+      value: {}
+    microsoft.graph.teamworkHostedContent:
+      value:
+        contentBytes: AA==
+        contentType: String
+    microsoft.graph.teamworkTag:
+      value:
+        description: String
+        displayName: String
+        memberCount: '0'
+        members:
+        - '@odata.type': microsoft.graph.teamworkTagMember
+        tagType:
+          '@odata.type': microsoft.graph.teamworkTagType
+        teamId: String
+    microsoft.graph.teamworkTagMember:
+      value:
+        displayName: String
+        tenantId: String
+        userId: String
+    microsoft.graph.temporaryAccessPassAuthenticationMethod:
+      value:
+        isUsable: 'true'
+        isUsableOnce: 'true'
+        lifetimeInMinutes: '0'
+        methodUsabilityReason: String
+        startDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        temporaryAccessPass: String
+    microsoft.graph.thumbnailSet:
+      value:
+        large:
+          '@odata.type': microsoft.graph.thumbnail
+        medium:
+          '@odata.type': microsoft.graph.thumbnail
+        small:
+          '@odata.type': microsoft.graph.thumbnail
+        source:
+          '@odata.type': microsoft.graph.thumbnail
+    microsoft.graph.timeCard:
+      value:
+        breaks:
+        - '@odata.type': microsoft.graph.timeCardBreak
+        clockInEvent:
+          '@odata.type': microsoft.graph.timeCardEvent
+        clockOutEvent:
+          '@odata.type': microsoft.graph.timeCardEvent
+        confirmedBy:
+          '@odata.type': microsoft.graph.confirmedBy
+        notes:
+          '@odata.type': microsoft.graph.itemBody
+        originalEntry:
+          '@odata.type': microsoft.graph.timeCardEntry
+        state:
+          '@odata.type': microsoft.graph.timeCardState
+        userId: String
+    microsoft.graph.timeOff:
+      value:
+        draftTimeOff:
+          '@odata.type': microsoft.graph.timeOffItem
+        isStagedForDeletion: 'true'
+        sharedTimeOff:
+          '@odata.type': microsoft.graph.timeOffItem
+        userId: String
+    microsoft.graph.timeOffReason:
+      value:
+        code: String
+        displayName: String
+        iconType:
+          '@odata.type': microsoft.graph.timeOffReasonIconType
+        isActive: 'true'
+    microsoft.graph.timeOffRequest:
+      value:
+        endDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        startDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        timeOffReasonId: String
+    microsoft.graph.todo:
+      value:
+        lists:
+        - '@odata.type': microsoft.graph.todoTaskList
+    microsoft.graph.todoTask:
+      value:
+        attachments:
+        - '@odata.type': microsoft.graph.attachmentBase
+        attachmentSessions:
+        - '@odata.type': microsoft.graph.attachmentSession
+        body:
+          '@odata.type': microsoft.graph.itemBody
+        bodyLastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        categories:
+        - String
+        checklistItems:
+        - '@odata.type': microsoft.graph.checklistItem
+        completedDateTime:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        dueDateTime:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        extensions:
+        - '@odata.type': microsoft.graph.extension
+        hasAttachments: 'true'
+        importance:
+          '@odata.type': microsoft.graph.importance
+        isReminderOn: 'true'
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        linkedResources:
+        - '@odata.type': microsoft.graph.linkedResource
+        recurrence:
+          '@odata.type': microsoft.graph.patternedRecurrence
+        reminderDateTime:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        startDateTime:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        status:
+          '@odata.type': microsoft.graph.taskStatus
+        title: String
+    microsoft.graph.todoTaskList:
+      value:
+        displayName: String
+        extensions:
+        - '@odata.type': microsoft.graph.extension
+        isOwner: 'true'
+        isShared: 'true'
+        tasks:
+        - '@odata.type': microsoft.graph.todoTask
+        wellknownListName:
+          '@odata.type': microsoft.graph.wellknownListName
+    microsoft.graph.trending:
+      value:
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        resource:
+          '@odata.type': microsoft.graph.entity
+        resourceReference:
+          '@odata.type': microsoft.graph.resourceReference
+        resourceVisualization:
+          '@odata.type': microsoft.graph.resourceVisualization
+        weight: '0'
+    microsoft.graph.unifiedStorageQuota:
+      value:
+        deleted: '0'
+        manageWebUrl: String
+        remaining: '0'
+        services:
+        - '@odata.type': microsoft.graph.serviceStorageQuotaBreakdown
+        state: String
+        total: '0'
+        used: '0'
+    microsoft.graph.usageRightsIncluded:
+      value:
+        ownerEmail: String
+        userEmail: String
+        value:
+          '@odata.type': microsoft.graph.usageRights
+    microsoft.graph.usedInsight:
+      value:
+        lastUsed:
+          '@odata.type': microsoft.graph.usageDetails
+        resource:
+          '@odata.type': microsoft.graph.entity
+        resourceReference:
+          '@odata.type': microsoft.graph.resourceReference
+        resourceVisualization:
+          '@odata.type': microsoft.graph.resourceVisualization
+    microsoft.graph.user:
+      value:
+        aboutMe: String
+        accountEnabled: 'true'
+        activities:
+        - '@odata.type': microsoft.graph.userActivity
+        adhocCalls:
+        - '@odata.type': microsoft.graph.adhocCall
+        ageGroup: String
+        agreementAcceptances:
+        - '@odata.type': microsoft.graph.agreementAcceptance
+        appRoleAssignments:
+        - '@odata.type': microsoft.graph.appRoleAssignment
+        assignedLicenses:
+        - '@odata.type': microsoft.graph.assignedLicense
+        assignedPlans:
+        - '@odata.type': microsoft.graph.assignedPlan
+        authentication:
+          '@odata.type': microsoft.graph.authentication
+        authorizationInfo:
+          '@odata.type': microsoft.graph.authorizationInfo
+        birthday: '0001-01-01T00:00:00.0000000+00:00'
+        businessPhones:
+        - String
+        calendar:
+          '@odata.type': microsoft.graph.calendar
+        calendarGroups:
+        - '@odata.type': microsoft.graph.calendarGroup
+        calendars:
+        - '@odata.type': microsoft.graph.calendar
+        calendarView:
+        - '@odata.type': microsoft.graph.event
+        chats:
+        - '@odata.type': microsoft.graph.chat
+        city: String
+        cloudClipboard:
+          '@odata.type': microsoft.graph.cloudClipboardRoot
+        cloudPCs:
+        - '@odata.type': microsoft.graph.cloudPC
+        companyName: String
+        consentProvidedForMinor: String
+        contactFolders:
+        - '@odata.type': microsoft.graph.contactFolder
+        contacts:
+        - '@odata.type': microsoft.graph.contact
+        country: String
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        createdObjects:
+        - '@odata.type': microsoft.graph.directoryObject
+        creationType: String
+        customSecurityAttributes:
+          '@odata.type': microsoft.graph.customSecurityAttributeValue
+        dataSecurityAndGovernance:
+          '@odata.type': microsoft.graph.userDataSecurityAndGovernance
+        department: String
+        deviceEnrollmentLimit: '0'
+        deviceManagementTroubleshootingEvents:
+        - '@odata.type': microsoft.graph.deviceManagementTroubleshootingEvent
+        directReports:
+        - '@odata.type': microsoft.graph.directoryObject
+        displayName: String
+        drive:
+          '@odata.type': microsoft.graph.drive
+        drives:
+        - '@odata.type': microsoft.graph.drive
+        employeeExperience:
+          '@odata.type': microsoft.graph.employeeExperienceUser
+        employeeHireDate: '0001-01-01T00:00:00.0000000+00:00'
+        employeeId: String
+        employeeLeaveDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        employeeOrgData:
+          '@odata.type': microsoft.graph.employeeOrgData
+        employeeType: String
+        events:
+        - '@odata.type': microsoft.graph.event
+        extensions:
+        - '@odata.type': microsoft.graph.extension
+        externalUserState: String
+        externalUserStateChangeDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        faxNumber: String
+        followedSites:
+        - '@odata.type': microsoft.graph.site
+        givenName: String
+        hireDate: '0001-01-01T00:00:00.0000000+00:00'
+        identities:
+        - '@odata.type': microsoft.graph.objectIdentity
+        identityParentId: String
+        imAddresses:
+        - String
+        inferenceClassification:
+          '@odata.type': microsoft.graph.inferenceClassification
+        insights:
+          '@odata.type': microsoft.graph.itemInsights
+        interests:
+        - String
+        isManagementRestricted: 'true'
+        isResourceAccount: 'true'
+        jobTitle: String
+        joinedTeams:
+        - '@odata.type': microsoft.graph.team
+        lastPasswordChangeDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        legalAgeGroupClassification: String
+        licenseAssignmentStates:
+        - '@odata.type': microsoft.graph.licenseAssignmentState
+        licenseDetails:
+        - '@odata.type': microsoft.graph.licenseDetails
+        mail: String
+        mailboxSettings:
+          '@odata.type': microsoft.graph.mailboxSettings
+        mailFolders:
+        - '@odata.type': microsoft.graph.mailFolder
+        mailNickname: String
+        managedAppRegistrations:
+        - '@odata.type': microsoft.graph.managedAppRegistration
+        managedDevices:
+        - '@odata.type': microsoft.graph.managedDevice
+        manager:
+          '@odata.type': microsoft.graph.directoryObject
+        memberOf:
+        - '@odata.type': microsoft.graph.directoryObject
+        messages:
+        - '@odata.type': microsoft.graph.message
+        mobilePhone: String
+        mySite: String
+        oauth2PermissionGrants:
+        - '@odata.type': microsoft.graph.oAuth2PermissionGrant
+        officeLocation: String
+        onenote:
+          '@odata.type': microsoft.graph.onenote
+        onlineMeetings:
+        - '@odata.type': microsoft.graph.onlineMeeting
+        onPremisesDistinguishedName: String
+        onPremisesDomainName: String
+        onPremisesExtensionAttributes:
+          '@odata.type': microsoft.graph.onPremisesExtensionAttributes
+        onPremisesImmutableId: String
+        onPremisesLastSyncDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        onPremisesProvisioningErrors:
+        - '@odata.type': microsoft.graph.onPremisesProvisioningError
+        onPremisesSamAccountName: String
+        onPremisesSecurityIdentifier: String
+        onPremisesSyncBehavior:
+          '@odata.type': microsoft.graph.onPremisesSyncBehavior
+        onPremisesSyncEnabled: 'true'
+        onPremisesUserPrincipalName: String
+        otherMails:
+        - String
+        outlook:
+          '@odata.type': microsoft.graph.outlookUser
+        ownedDevices:
+        - '@odata.type': microsoft.graph.directoryObject
+        ownedObjects:
+        - '@odata.type': microsoft.graph.directoryObject
+        passwordPolicies: String
+        passwordProfile:
+          '@odata.type': microsoft.graph.passwordProfile
+        pastProjects:
+        - String
+        people:
+        - '@odata.type': microsoft.graph.person
+        permissionGrants:
+        - '@odata.type': microsoft.graph.resourceSpecificPermissionGrant
+        photo:
+          '@odata.type': microsoft.graph.profilePhoto
+        photos:
+        - '@odata.type': microsoft.graph.profilePhoto
+        planner:
+          '@odata.type': microsoft.graph.plannerUser
+        postalCode: String
+        preferredDataLocation: String
+        preferredLanguage: String
+        preferredName: String
+        presence:
+          '@odata.type': microsoft.graph.presence
+        print:
+          '@odata.type': microsoft.graph.userPrint
+        provisionedPlans:
+        - '@odata.type': microsoft.graph.provisionedPlan
+        proxyAddresses:
+        - String
+        registeredDevices:
+        - '@odata.type': microsoft.graph.directoryObject
+        responsibilities:
+        - String
+        schools:
+        - String
+        scopedRoleMemberOf:
+        - '@odata.type': microsoft.graph.scopedRoleMembership
+        securityIdentifier: String
+        serviceProvisioningErrors:
+        - '@odata.type': microsoft.graph.serviceProvisioningError
+        settings:
+          '@odata.type': microsoft.graph.userSettings
+        showInAddressList: 'true'
+        signInActivity:
+          '@odata.type': microsoft.graph.signInActivity
+        signInSessionsValidFromDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        skills:
+        - String
+        solutions:
+          '@odata.type': microsoft.graph.userSolutionRoot
+        sponsors:
+        - '@odata.type': microsoft.graph.directoryObject
+        state: String
+        streetAddress: String
+        surname: String
+        teamwork:
+          '@odata.type': microsoft.graph.userTeamwork
+        todo:
+          '@odata.type': microsoft.graph.todo
+        transitiveMemberOf:
+        - '@odata.type': microsoft.graph.directoryObject
+        usageLocation: String
+        userPrincipalName: String
+        userType: String
+    microsoft.graph.userActivity:
+      value:
+        activationUrl: String
+        activitySourceHost: String
+        appActivityId: String
+        appDisplayName: String
+        contentInfo:
+          '@odata.type': microsoft.graph.Json
+        contentUrl: String
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        expirationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        fallbackUrl: String
+        historyItems:
+        - '@odata.type': microsoft.graph.activityHistoryItem
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        status:
+          '@odata.type': microsoft.graph.status
+        userTimezone: String
+        visualElements:
+          '@odata.type': microsoft.graph.visualInfo
+    microsoft.graph.userDataSecurityAndGovernance:
+      value:
+        activities:
+          '@odata.type': microsoft.graph.activitiesContainer
+        protectionScopes:
+          '@odata.type': microsoft.graph.userProtectionScopeContainer
+    microsoft.graph.userInsightsSettings:
+      value:
+        isEnabled: 'true'
+    microsoft.graph.userProtectionScopeContainer:
+      value: {}
+    microsoft.graph.userScopeTeamsAppInstallation:
+      value:
+        chat:
+          '@odata.type': microsoft.graph.chat
+    microsoft.graph.userSettings:
+      value:
+        contributionToContentDiscoveryAsOrganizationDisabled: 'true'
+        contributionToContentDiscoveryDisabled: 'true'
+        exchange:
+          '@odata.type': microsoft.graph.exchangeSettings
+        itemInsights:
+          '@odata.type': microsoft.graph.userInsightsSettings
+        shiftPreferences:
+          '@odata.type': microsoft.graph.shiftPreferences
+        storage:
+          '@odata.type': microsoft.graph.userStorage
+        windows:
+        - '@odata.type': microsoft.graph.windowsSetting
+        workHoursAndLocations:
+          '@odata.type': microsoft.graph.workHoursAndLocationsSetting
+    microsoft.graph.userSolutionRoot:
+      value:
+        workingTimeSchedule:
+          '@odata.type': microsoft.graph.workingTimeSchedule
+    microsoft.graph.userStorage:
+      value:
+        quota:
+          '@odata.type': microsoft.graph.unifiedStorageQuota
+    microsoft.graph.userTeamwork:
+      value:
+        associatedTeams:
+        - '@odata.type': microsoft.graph.associatedTeamInfo
+        installedApps:
+        - '@odata.type': microsoft.graph.userScopeTeamsAppInstallation
+        locale: String
+        region: String
+    microsoft.graph.verticalSection:
+      value:
+        emphasis:
+          '@odata.type': microsoft.graph.sectionEmphasisType
+        webparts:
+        - '@odata.type': microsoft.graph.webPart
+    microsoft.graph.webPart:
+      value: {}
+    microsoft.graph.windowsDeviceMalwareState:
+      value:
+        additionalInformationUrl: String
+        category:
+          '@odata.type': microsoft.graph.windowsMalwareCategory
+        detectionCount: '0'
+        displayName: String
+        executionState:
+          '@odata.type': microsoft.graph.windowsMalwareExecutionState
+        initialDetectionDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastStateChangeDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        severity:
+          '@odata.type': microsoft.graph.windowsMalwareSeverity
+        state:
+          '@odata.type': microsoft.graph.windowsMalwareState
+        threatState:
+          '@odata.type': microsoft.graph.windowsMalwareThreatState
+    microsoft.graph.windowsHelloForBusinessAuthenticationMethod:
+      value:
+        device:
+          '@odata.type': microsoft.graph.device
+        displayName: String
+        keyStrength:
+          '@odata.type': microsoft.graph.authenticationMethodKeyStrength
+    microsoft.graph.windowsProtectionState:
+      value:
+        antiMalwareVersion: String
+        controlledConfigurationEnabled: 'true'
+        detectedMalwareState:
+        - '@odata.type': microsoft.graph.windowsDeviceMalwareState
+        deviceState:
+          '@odata.type': microsoft.graph.windowsDeviceHealthState
+        engineVersion: String
+        fullScanOverdue: 'true'
+        fullScanRequired: 'true'
+        isVirtualMachine: 'true'
+        lastFullScanDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastFullScanSignatureVersion: String
+        lastQuickScanDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastQuickScanSignatureVersion: String
+        lastReportedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        malwareProtectionEnabled: 'true'
+        networkInspectionSystemEnabled: 'true'
+        productStatus:
+          '@odata.type': microsoft.graph.windowsDefenderProductStatus
+        quickScanOverdue: 'true'
+        realTimeProtectionEnabled: 'true'
+        rebootRequired: 'true'
+        signatureUpdateOverdue: 'true'
+        signatureVersion: String
+        tamperProtectionEnabled: 'true'
+    microsoft.graph.windowsSetting:
+      value:
+        instances:
+        - '@odata.type': microsoft.graph.windowsSettingInstance
+        payloadType: String
+        settingType:
+          '@odata.type': microsoft.graph.windowsSettingType
+        windowsDeviceId: String
+    microsoft.graph.windowsSettingInstance:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        expirationDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        payload: String
+    microsoft.graph.workbook:
+      value:
+        application:
+          '@odata.type': microsoft.graph.workbookApplication
+        comments:
+        - '@odata.type': microsoft.graph.workbookComment
+        functions:
+          '@odata.type': microsoft.graph.workbookFunctions
+        names:
+        - '@odata.type': microsoft.graph.workbookNamedItem
+        operations:
+        - '@odata.type': microsoft.graph.workbookOperation
+        tables:
+        - '@odata.type': microsoft.graph.workbookTable
+        worksheets:
+        - '@odata.type': microsoft.graph.workbookWorksheet
+    microsoft.graph.workbookApplication:
+      value:
+        calculationMode: String
+    microsoft.graph.workbookChart:
+      value:
+        axes:
+          '@odata.type': microsoft.graph.workbookChartAxes
+        dataLabels:
+          '@odata.type': microsoft.graph.workbookChartDataLabels
+        format:
+          '@odata.type': microsoft.graph.workbookChartAreaFormat
+        height: '0'
+        left: '0'
+        legend:
+          '@odata.type': microsoft.graph.workbookChartLegend
+        name: String
+        series:
+        - '@odata.type': microsoft.graph.workbookChartSeries
+        title:
+          '@odata.type': microsoft.graph.workbookChartTitle
+        top: '0'
+        width: '0'
+        worksheet:
+          '@odata.type': microsoft.graph.workbookWorksheet
+    microsoft.graph.workbookChartAreaFormat:
+      value:
+        fill:
+          '@odata.type': microsoft.graph.workbookChartFill
+        font:
+          '@odata.type': microsoft.graph.workbookChartFont
+    microsoft.graph.workbookChartAxes:
+      value:
+        categoryAxis:
+          '@odata.type': microsoft.graph.workbookChartAxis
+        seriesAxis:
+          '@odata.type': microsoft.graph.workbookChartAxis
+        valueAxis:
+          '@odata.type': microsoft.graph.workbookChartAxis
+    microsoft.graph.workbookChartAxis:
+      value:
+        format:
+          '@odata.type': microsoft.graph.workbookChartAxisFormat
+        majorGridlines:
+          '@odata.type': microsoft.graph.workbookChartGridlines
+        majorUnit:
+          '@odata.type': microsoft.graph.Json
+        maximum:
+          '@odata.type': microsoft.graph.Json
+        minimum:
+          '@odata.type': microsoft.graph.Json
+        minorGridlines:
+          '@odata.type': microsoft.graph.workbookChartGridlines
+        minorUnit:
+          '@odata.type': microsoft.graph.Json
+        title:
+          '@odata.type': microsoft.graph.workbookChartAxisTitle
+    microsoft.graph.workbookChartAxisFormat:
+      value:
+        font:
+          '@odata.type': microsoft.graph.workbookChartFont
+        line:
+          '@odata.type': microsoft.graph.workbookChartLineFormat
+    microsoft.graph.workbookChartAxisTitle:
+      value:
+        format:
+          '@odata.type': microsoft.graph.workbookChartAxisTitleFormat
+        text: String
+        visible: 'true'
+    microsoft.graph.workbookChartAxisTitleFormat:
+      value:
+        font:
+          '@odata.type': microsoft.graph.workbookChartFont
+    microsoft.graph.workbookChartDataLabelFormat:
+      value:
+        fill:
+          '@odata.type': microsoft.graph.workbookChartFill
+        font:
+          '@odata.type': microsoft.graph.workbookChartFont
+    microsoft.graph.workbookChartDataLabels:
+      value:
+        format:
+          '@odata.type': microsoft.graph.workbookChartDataLabelFormat
+        position: String
+        separator: String
+        showBubbleSize: 'true'
+        showCategoryName: 'true'
+        showLegendKey: 'true'
+        showPercentage: 'true'
+        showSeriesName: 'true'
+        showValue: 'true'
+    microsoft.graph.workbookChartFill:
+      value: {}
+    microsoft.graph.workbookChartFont:
+      value:
+        bold: 'true'
+        color: String
+        italic: 'true'
+        name: String
+        size: '0'
+        underline: String
+    microsoft.graph.workbookChartGridlines:
+      value:
+        format:
+          '@odata.type': microsoft.graph.workbookChartGridlinesFormat
+        visible: 'true'
+    microsoft.graph.workbookChartGridlinesFormat:
+      value:
+        line:
+          '@odata.type': microsoft.graph.workbookChartLineFormat
+    microsoft.graph.workbookChartLegend:
+      value:
+        format:
+          '@odata.type': microsoft.graph.workbookChartLegendFormat
+        overlay: 'true'
+        position: String
+        visible: 'true'
+    microsoft.graph.workbookChartLegendFormat:
+      value:
+        fill:
+          '@odata.type': microsoft.graph.workbookChartFill
+        font:
+          '@odata.type': microsoft.graph.workbookChartFont
+    microsoft.graph.workbookChartLineFormat:
+      value:
+        color: String
+    microsoft.graph.workbookChartPoint:
+      value:
+        format:
+          '@odata.type': microsoft.graph.workbookChartPointFormat
+        value:
+          '@odata.type': microsoft.graph.Json
+    microsoft.graph.workbookChartPointFormat:
+      value:
+        fill:
+          '@odata.type': microsoft.graph.workbookChartFill
+    microsoft.graph.workbookChartSeries:
+      value:
+        format:
+          '@odata.type': microsoft.graph.workbookChartSeriesFormat
+        name: String
+        points:
+        - '@odata.type': microsoft.graph.workbookChartPoint
+    microsoft.graph.workbookChartSeriesFormat:
+      value:
+        fill:
+          '@odata.type': microsoft.graph.workbookChartFill
+        line:
+          '@odata.type': microsoft.graph.workbookChartLineFormat
+    microsoft.graph.workbookChartTitle:
+      value:
+        format:
+          '@odata.type': microsoft.graph.workbookChartTitleFormat
+        overlay: 'true'
+        text: String
+        visible: 'true'
+    microsoft.graph.workbookChartTitleFormat:
+      value:
+        fill:
+          '@odata.type': microsoft.graph.workbookChartFill
+        font:
+          '@odata.type': microsoft.graph.workbookChartFont
+    microsoft.graph.workbookComment:
+      value:
+        content: String
+        contentType: String
+        replies:
+        - '@odata.type': microsoft.graph.workbookCommentReply
+    microsoft.graph.workbookCommentReply:
+      value:
+        content: String
+        contentType: String
+    microsoft.graph.workbookFilter:
+      value:
+        criteria:
+          '@odata.type': microsoft.graph.workbookFilterCriteria
+    microsoft.graph.workbookFunctions:
+      value: {}
+    microsoft.graph.workbookNamedItem:
+      value:
+        comment: String
+        name: String
+        scope: String
+        type: String
+        value:
+          '@odata.type': microsoft.graph.Json
+        visible: 'true'
+        worksheet:
+          '@odata.type': microsoft.graph.workbookWorksheet
+    microsoft.graph.workbookOperation:
+      value:
+        error:
+          '@odata.type': microsoft.graph.workbookOperationError
+        resourceLocation: String
+        status:
+          '@odata.type': microsoft.graph.workbookOperationStatus
+    microsoft.graph.workbookPivotTable:
+      value:
+        name: String
+        worksheet:
+          '@odata.type': microsoft.graph.workbookWorksheet
+    microsoft.graph.workbookTable:
+      value:
+        columns:
+        - '@odata.type': microsoft.graph.workbookTableColumn
+        highlightFirstColumn: 'true'
+        highlightLastColumn: 'true'
+        legacyId: String
+        name: String
+        rows:
+        - '@odata.type': microsoft.graph.workbookTableRow
+        showBandedColumns: 'true'
+        showBandedRows: 'true'
+        showFilterButton: 'true'
+        showHeaders: 'true'
+        showTotals: 'true'
+        sort:
+          '@odata.type': microsoft.graph.workbookTableSort
+        style: String
+        worksheet:
+          '@odata.type': microsoft.graph.workbookWorksheet
+    microsoft.graph.workbookTableColumn:
+      value:
+        filter:
+          '@odata.type': microsoft.graph.workbookFilter
+        index: '0'
+        name: String
+        values:
+          '@odata.type': microsoft.graph.Json
+    microsoft.graph.workbookTableRow:
+      value:
+        index: '0'
+        values:
+          '@odata.type': microsoft.graph.Json
+    microsoft.graph.workbookTableSort:
+      value:
+        fields:
+        - '@odata.type': microsoft.graph.workbookSortField
+        matchCase: 'true'
+        method: String
+    microsoft.graph.workbookWorksheet:
+      value:
+        charts:
+        - '@odata.type': microsoft.graph.workbookChart
+        name: String
+        names:
+        - '@odata.type': microsoft.graph.workbookNamedItem
+        pivotTables:
+        - '@odata.type': microsoft.graph.workbookPivotTable
+        position: '0'
+        protection:
+          '@odata.type': microsoft.graph.workbookWorksheetProtection
+        tables:
+        - '@odata.type': microsoft.graph.workbookTable
+        visibility: String
+    microsoft.graph.workbookWorksheetProtection:
+      value:
+        options:
+          '@odata.type': microsoft.graph.workbookWorksheetProtectionOptions
+        protected: 'true'
+    microsoft.graph.workHoursAndLocationsSetting:
+      value:
+        maxSharedWorkLocationDetails:
+          '@odata.type': microsoft.graph.maxWorkLocationDetails
+        occurrences:
+        - '@odata.type': microsoft.graph.workPlanOccurrence
+        recurrences:
+        - '@odata.type': microsoft.graph.workPlanRecurrence
+    microsoft.graph.workingTimeSchedule:
+      value: {}
+    microsoft.graph.workPlanOccurrence:
+      value:
+        end:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        placeId: String
+        recurrenceId: String
+        start:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        timeOffDetails:
+          '@odata.type': microsoft.graph.timeOffDetails
+        workLocationType:
+          '@odata.type': microsoft.graph.workLocationType
+    microsoft.graph.workPlanRecurrence:
+      value:
+        end:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        placeId: String
+        recurrence:
+          '@odata.type': microsoft.graph.patternedRecurrence
+        start:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        workLocationType:
+          '@odata.type': microsoft.graph.workLocationType
+    microsoft.graph.accessAction:
+      value: {}
+    microsoft.graph.activityMetadata:
+      value:
+        activity:
+          '@odata.type': microsoft.graph.userActivityType
+    microsoft.graph.album:
+      value:
+        coverImageItemId: String
+    microsoft.graph.alternativeSecurityId:
+      value:
+        identityProvider: String
+        key: AA==
+        type: '0'
+    microsoft.graph.appIdentity:
+      value:
+        appId: String
+        displayName: String
+        servicePrincipalId: String
+        servicePrincipalName: String
+    microsoft.graph.assignedLabel:
+      value:
+        displayName: String
+        labelId: String
+    microsoft.graph.assignedLicense:
+      value:
+        disabledPlans:
+        - 00000000-0000-0000-0000-000000000000
+        skuId: 00000000-0000-0000-0000-000000000000
+    microsoft.graph.assignedPlan:
+      value:
+        assignedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        capabilityStatus: String
+        service: String
+        servicePlanId: 00000000-0000-0000-0000-000000000000
+    microsoft.graph.attendanceInterval:
+      value:
+        durationInSeconds: '0'
+        joinDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        leaveDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.attendee:
+      value:
+        proposedNewTime:
+          '@odata.type': microsoft.graph.timeSlot
+        status:
+          '@odata.type': microsoft.graph.responseStatus
+    microsoft.graph.attendeeBase:
+      value:
+        type:
+          '@odata.type': microsoft.graph.attendeeType
+    microsoft.graph.audio:
+      value:
+        album: String
+        albumArtist: String
+        artist: String
+        bitrate: '0'
+        composers: String
+        copyright: String
+        disc: '0'
+        discCount: '0'
+        duration: '0'
+        genre: String
+        hasDrm: 'true'
+        isVariableBitrate: 'true'
+        title: String
+        track: '0'
+        trackCount: '0'
+        year: '0'
+    microsoft.graph.audioConferencing:
+      value:
+        conferenceId: String
+        dialinUrl: String
+        tollFreeNumber: String
+        tollFreeNumbers:
+        - String
+        tollNumber: String
+        tollNumbers:
+        - String
+    microsoft.graph.authorizationInfo:
+      value:
+        certificateUserIds:
+        - String
+    microsoft.graph.automaticRepliesSetting:
+      value:
+        externalAudience:
+          '@odata.type': microsoft.graph.externalAudienceScope
+        externalReplyMessage: String
+        internalReplyMessage: String
+        scheduledEndDateTime:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        scheduledStartDateTime:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        status:
+          '@odata.type': microsoft.graph.automaticRepliesStatus
+    microsoft.graph.booleanColumn:
+      value: {}
+    microsoft.graph.broadcastMeetingCaptionSettings:
+      value:
+        isCaptionEnabled: 'true'
+        spokenLanguage: String
+        translationLanguages:
+        - String
+    microsoft.graph.broadcastMeetingSettings:
+      value:
+        allowedAudience:
+          '@odata.type': microsoft.graph.broadcastMeetingAudience
+        captions:
+          '@odata.type': microsoft.graph.broadcastMeetingCaptionSettings
+        isAttendeeReportEnabled: 'true'
+        isQuestionAndAnswerEnabled: 'true'
+        isRecordingEnabled: 'true'
+        isVideoOnDemandEnabled: 'true'
+    microsoft.graph.bundle:
+      value:
+        album:
+          '@odata.type': microsoft.graph.album
+        childCount: '0'
+    microsoft.graph.calculatedColumn:
+      value:
+        format: String
+        formula: String
+        outputType: String
+    microsoft.graph.channelIdentity:
+      value:
+        channelId: String
+        teamId: String
+    microsoft.graph.channelSummary:
+      value:
+        guestsCount: '0'
+        hasMembersFromOtherTenants: 'true'
+        membersCount: '0'
+        ownersCount: '0'
+    microsoft.graph.chatInfo:
+      value:
+        messageId: String
+        replyChainMessageId: String
+        threadId: String
+    microsoft.graph.chatMessageAttachment:
+      value:
+        content: String
+        contentType: String
+        contentUrl: String
+        id: String
+        name: String
+        teamsAppId: String
+        thumbnailUrl: String
+    microsoft.graph.chatMessageFromIdentitySet:
+      value: {}
+    microsoft.graph.chatMessageHistoryItem:
+      value:
+        actions:
+          '@odata.type': microsoft.graph.chatMessageActions
+        modifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        reaction:
+          '@odata.type': microsoft.graph.chatMessageReaction
+    microsoft.graph.chatMessageMention:
+      value:
+        id: '0'
+        mentioned:
+          '@odata.type': microsoft.graph.chatMessageMentionedIdentitySet
+        mentionText: String
+    microsoft.graph.chatMessageMentionedIdentitySet:
+      value:
+        conversation:
+          '@odata.type': microsoft.graph.teamworkConversationIdentity
+    microsoft.graph.chatMessagePolicyViolation:
+      value:
+        dlpAction:
+          '@odata.type': microsoft.graph.chatMessagePolicyViolationDlpActionTypes
+        justificationText: String
+        policyTip:
+          '@odata.type': microsoft.graph.chatMessagePolicyViolationPolicyTip
+        userAction:
+          '@odata.type': microsoft.graph.chatMessagePolicyViolationUserActionTypes
+        verdictDetails:
+          '@odata.type': microsoft.graph.chatMessagePolicyViolationVerdictDetailsTypes
+    microsoft.graph.chatMessagePolicyViolationPolicyTip:
+      value:
+        complianceUrl: String
+        generalText: String
+        matchedConditionDescriptions:
+        - String
+    microsoft.graph.chatMessageReaction:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        displayName: String
+        reactionContentUrl: String
+        reactionType: String
+        user:
+          '@odata.type': microsoft.graph.chatMessageReactionIdentitySet
+    microsoft.graph.chatMessageReactionIdentitySet:
+      value: {}
+    microsoft.graph.chatRestrictions:
+      value:
+        allowTextOnly: 'true'
+    microsoft.graph.chatViewpoint:
+      value:
+        isHidden: 'true'
+        lastMessageReadDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.choiceColumn:
+      value:
+        allowTextEntry: 'true'
+        choices:
+        - String
+        displayAs: String
+    microsoft.graph.cloudClipboardItemPayload:
+      value:
+        content: String
+        formatName: String
+    microsoft.graph.columnValidation:
+      value:
+        defaultLanguage: String
+        descriptions:
+        - '@odata.type': microsoft.graph.displayNameLocalization
+        formula: String
+    microsoft.graph.configurationManagerClientEnabledFeatures:
+      value:
+        compliancePolicy: 'true'
+        deviceConfiguration: 'true'
+        inventory: 'true'
+        modernApps: 'true'
+        resourceAccess: 'true'
+        windowsUpdateForBusiness: 'true'
+    microsoft.graph.contentApprovalStatusColumn:
+      value: {}
+    microsoft.graph.contentBase:
+      value: {}
+    microsoft.graph.contentTypeInfo:
+      value:
+        id: String
+        name: String
+    microsoft.graph.contentTypeOrder:
+      value:
+        default: 'true'
+        position: '0'
+    microsoft.graph.currencyColumn:
+      value:
+        locale: String
+    microsoft.graph.customSecurityAttributeValue:
+      value: {}
+    microsoft.graph.dateTimeColumn:
+      value:
+        displayAs: String
+        format: String
+    microsoft.graph.dateTimeTimeZone:
+      value:
+        dateTime: String
+        timeZone: String
+    microsoft.graph.defaultColumnValue:
+      value:
+        formula: String
+        value: String
+    microsoft.graph.deleted:
+      value:
+        state: String
+    microsoft.graph.deviceActionResult:
+      value:
+        actionName: String
+        actionState:
+          '@odata.type': microsoft.graph.actionState
+        lastUpdatedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        startDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.deviceCompliancePolicySettingState:
+      value:
+        currentValue: String
+        errorCode: '0'
+        errorDescription: String
+        instanceDisplayName: String
+        setting: String
+        settingName: String
+        sources:
+        - '@odata.type': microsoft.graph.settingSource
+        state:
+          '@odata.type': microsoft.graph.complianceStatus
+        userEmail: String
+        userId: String
+        userName: String
+        userPrincipalName: String
+    microsoft.graph.deviceConfigurationSettingState:
+      value:
+        currentValue: String
+        errorCode: '0'
+        errorDescription: String
+        instanceDisplayName: String
+        setting: String
+        settingName: String
+        sources:
+        - '@odata.type': microsoft.graph.settingSource
+        state:
+          '@odata.type': microsoft.graph.complianceStatus
+        userEmail: String
+        userId: String
+        userName: String
+        userPrincipalName: String
+    microsoft.graph.deviceHealthAttestationState:
+      value:
+        attestationIdentityKey: String
+        bitLockerStatus: String
+        bootAppSecurityVersion: String
+        bootDebugging: String
+        bootManagerSecurityVersion: String
+        bootManagerVersion: String
+        bootRevisionListInfo: String
+        codeIntegrity: String
+        codeIntegrityCheckVersion: String
+        codeIntegrityPolicy: String
+        contentNamespaceUrl: String
+        contentVersion: String
+        dataExcutionPolicy: String
+        deviceHealthAttestationStatus: String
+        earlyLaunchAntiMalwareDriverProtection: String
+        healthAttestationSupportedStatus: String
+        healthStatusMismatchInfo: String
+        issuedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastUpdateDateTime: String
+        operatingSystemKernelDebugging: String
+        operatingSystemRevListInfo: String
+        pcr0: String
+        pcrHashAlgorithm: String
+        resetCount: '0'
+        restartCount: '0'
+        safeMode: String
+        secureBoot: String
+        secureBootConfigurationPolicyFingerPrint: String
+        testSigning: String
+        tpmVersion: String
+        virtualSecureMode: String
+        windowsPE: String
+    microsoft.graph.deviceMetadata:
+      value:
+        deviceType: String
+        ipAddress: String
+        operatingSystemSpecifications:
+          '@odata.type': microsoft.graph.operatingSystemSpecifications
+    microsoft.graph.displayNameLocalization:
+      value:
+        displayName: String
+        languageTag: String
+    microsoft.graph.documentSet:
+      value:
+        allowedContentTypes:
+        - '@odata.type': microsoft.graph.contentTypeInfo
+        defaultContents:
+        - '@odata.type': microsoft.graph.documentSetContent
+        propagateWelcomePageChanges: 'true'
+        sharedColumns:
+        - '@odata.type': microsoft.graph.columnDefinition
+        shouldPrefixNameToFile: 'true'
+        welcomePageColumns:
+        - '@odata.type': microsoft.graph.columnDefinition
+        welcomePageUrl: String
+    microsoft.graph.documentSetContent:
+      value:
+        contentType:
+          '@odata.type': microsoft.graph.contentTypeInfo
+        fileName: String
+        folderName: String
+    microsoft.graph.documentSetVersionItem:
+      value:
+        itemId: String
+        title: String
+        versionId: String
+    microsoft.graph.driveRecipient:
+      value:
+        alias: String
+        email: String
+        objectId: String
+    microsoft.graph.emailAddress:
+      value:
+        address: String
+        name: String
+    microsoft.graph.employeeOrgData:
+      value:
+        costCenter: String
+        division: String
+    microsoft.graph.eventMessageDetail:
+      value: {}
+    microsoft.graph.externalLink:
+      value:
+        href: String
+    microsoft.graph.file:
+      value:
+        hashes:
+          '@odata.type': microsoft.graph.hashes
+        mimeType: String
+        processingMetadata: 'true'
+    microsoft.graph.fileSystemInfo:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastAccessedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.folder:
+      value:
+        childCount: '0'
+        view:
+          '@odata.type': microsoft.graph.folderView
+    microsoft.graph.folderView:
+      value:
+        sortBy: String
+        sortOrder: String
+        viewType: String
+    microsoft.graph.followupFlag:
+      value:
+        completedDateTime:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        dueDateTime:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        flagStatus:
+          '@odata.type': microsoft.graph.followupFlagStatus
+        startDateTime:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+    microsoft.graph.geoCoordinates:
+      value:
+        altitude: '0'
+        latitude: '0'
+        longitude: '0'
+    microsoft.graph.geolocationColumn:
+      value: {}
+    microsoft.graph.hashes:
+      value:
+        crc32Hash: String
+        quickXorHash: String
+        sha1Hash: String
+        sha256Hash: String
+    microsoft.graph.hyperlinkOrPictureColumn:
+      value:
+        isPicture: 'true'
+    microsoft.graph.identity:
+      value:
+        displayName: String
+        id: String
+    microsoft.graph.identitySet:
+      value:
+        application:
+          '@odata.type': microsoft.graph.identity
+        device:
+          '@odata.type': microsoft.graph.identity
+        user:
+          '@odata.type': microsoft.graph.identity
+    microsoft.graph.image:
+      value:
+        height: '0'
+        width: '0'
+    microsoft.graph.imageInfo:
+      value:
+        addImageQuery: 'true'
+        alternateText: String
+        alternativeText: String
+        iconUrl: String
+    microsoft.graph.incompleteData:
+      value:
+        missingDataBeforeDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        wasThrottled: 'true'
+    microsoft.graph.insightIdentity:
+      value:
+        address: String
+        displayName: String
+        id: String
+    microsoft.graph.integerRange:
+      value:
+        end: '0'
+        start: '0'
+    microsoft.graph.integratedApplicationMetadata:
+      value:
+        name: String
+        version: String
+    microsoft.graph.internetMessageHeader:
+      value:
+        name: String
+        value: String
+    microsoft.graph.itemActionStat:
+      value:
+        actionCount: '0'
+        actorCount: '0'
+    microsoft.graph.itemBody:
+      value:
+        content: String
+        contentType:
+          '@odata.type': microsoft.graph.bodyType
+    microsoft.graph.itemReference:
+      value:
+        driveId: String
+        driveType: String
+        id: String
+        name: String
+        path: String
+        shareId: String
+        sharepointIds:
+          '@odata.type': microsoft.graph.sharepointIds
+        siteId: String
+    microsoft.graph.joinMeetingIdSettings:
+      value:
+        isPasscodeRequired: 'true'
+        joinMeetingId: String
+        passcode: String
+    microsoft.graph.Json:
+      value: {}
+    microsoft.graph.keyValue:
+      value:
+        key: String
+        value: String
+    microsoft.graph.licenseAssignmentState:
+      value:
+        assignedByGroup: String
+        disabledPlans:
+        - 00000000-0000-0000-0000-000000000000
+        error: String
+        lastUpdatedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        skuId: 00000000-0000-0000-0000-000000000000
+        state: String
+    microsoft.graph.licenseProcessingState:
+      value:
+        state: String
+    microsoft.graph.listInfo:
+      value:
+        contentTypesEnabled: 'true'
+        hidden: 'true'
+        template: String
+    microsoft.graph.lobbyBypassSettings:
+      value:
+        isDialInBypassEnabled: 'true'
+        scope:
+          '@odata.type': microsoft.graph.lobbyBypassScope
+    microsoft.graph.localeInfo:
+      value:
+        displayName: String
+        locale: String
+    microsoft.graph.location:
+      value:
+        address:
+          '@odata.type': microsoft.graph.physicalAddress
+        coordinates:
+          '@odata.type': microsoft.graph.outlookGeoCoordinates
+        displayName: String
+        locationEmailAddress: String
+        locationType:
+          '@odata.type': microsoft.graph.locationType
+        locationUri: String
+        uniqueId: String
+        uniqueIdType:
+          '@odata.type': microsoft.graph.locationUniqueIdType
+    microsoft.graph.lookupColumn:
+      value:
+        allowMultipleValues: 'true'
+        allowUnlimitedLength: 'true'
+        columnName: String
+        listId: String
+        primaryLookupColumnId: String
+    microsoft.graph.mailboxSettings:
+      value:
+        archiveFolder: String
+        automaticRepliesSetting:
+          '@odata.type': microsoft.graph.automaticRepliesSetting
+        dateFormat: String
+        delegateMeetingMessageDeliveryOptions:
+          '@odata.type': microsoft.graph.delegateMeetingMessageDeliveryOptions
+        language:
+          '@odata.type': microsoft.graph.localeInfo
+        timeFormat: String
+        timeZone: String
+        userPurpose:
+          '@odata.type': microsoft.graph.userPurpose
+        workingHours:
+          '@odata.type': microsoft.graph.workingHours
+    microsoft.graph.malware:
+      value:
+        description: String
+    microsoft.graph.meetingParticipantInfo:
+      value:
+        identity:
+          '@odata.type': microsoft.graph.identitySet
+        role:
+          '@odata.type': microsoft.graph.onlineMeetingRole
+        upn: String
+    microsoft.graph.meetingParticipants:
+      value:
+        attendees:
+        - '@odata.type': microsoft.graph.meetingParticipantInfo
+        organizer:
+          '@odata.type': microsoft.graph.meetingParticipantInfo
+    microsoft.graph.messageRuleActions:
+      value:
+        assignCategories:
+        - String
+        copyToFolder: String
+        delete: 'true'
+        forwardAsAttachmentTo:
+        - '@odata.type': microsoft.graph.recipient
+        forwardTo:
+        - '@odata.type': microsoft.graph.recipient
+        markAsRead: 'true'
+        markImportance:
+          '@odata.type': microsoft.graph.importance
+        moveToFolder: String
+        permanentDelete: 'true'
+        redirectTo:
+        - '@odata.type': microsoft.graph.recipient
+        stopProcessingRules: 'true'
+    microsoft.graph.messageRulePredicates:
+      value:
+        bodyContains:
+        - String
+        bodyOrSubjectContains:
+        - String
+        categories:
+        - String
+        fromAddresses:
+        - '@odata.type': microsoft.graph.recipient
+        hasAttachments: 'true'
+        headerContains:
+        - String
+        importance:
+          '@odata.type': microsoft.graph.importance
+        isApprovalRequest: 'true'
+        isAutomaticForward: 'true'
+        isAutomaticReply: 'true'
+        isEncrypted: 'true'
+        isMeetingRequest: 'true'
+        isMeetingResponse: 'true'
+        isNonDeliveryReport: 'true'
+        isPermissionControlled: 'true'
+        isReadReceipt: 'true'
+        isSigned: 'true'
+        isVoicemail: 'true'
+        messageActionFlag:
+          '@odata.type': microsoft.graph.messageActionFlag
+        notSentToMe: 'true'
+        recipientContains:
+        - String
+        senderContains:
+        - String
+        sensitivity:
+          '@odata.type': microsoft.graph.sensitivity
+        sentCcMe: 'true'
+        sentOnlyToMe: 'true'
+        sentToAddresses:
+        - '@odata.type': microsoft.graph.recipient
+        sentToMe: 'true'
+        sentToOrCcMe: 'true'
+        subjectContains:
+        - String
+        withinSizeRange:
+          '@odata.type': microsoft.graph.sizeRange
+    microsoft.graph.metaDataKeyStringPair:
+      value:
+        key: String
+        value: String
+    microsoft.graph.mobileAppIdentifier:
+      value: {}
+    microsoft.graph.notebookLinks:
+      value:
+        oneNoteClientUrl:
+          '@odata.type': microsoft.graph.externalLink
+        oneNoteWebUrl:
+          '@odata.type': microsoft.graph.externalLink
+    microsoft.graph.numberColumn:
+      value:
+        decimalPlaces: String
+        displayAs: String
+        maximum: '0'
+        minimum: '0'
+    microsoft.graph.objectIdentity:
+      value:
+        issuer: String
+        issuerAssignedId: String
+        signInType: String
+    microsoft.graph.onenoteOperationError:
+      value:
+        code: String
+        message: String
+    microsoft.graph.onlineMeetingInfo:
+      value:
+        conferenceId: String
+        joinUrl: String
+        phones:
+        - '@odata.type': microsoft.graph.phone
+        quickDial: String
+        tollFreeNumbers:
+        - String
+        tollNumber: String
+    microsoft.graph.onlineMeetingSensitivityLabelAssignment:
+      value:
+        sensitivityLabelId: String
+    microsoft.graph.onPremisesExtensionAttributes:
+      value:
+        extensionAttribute1: String
+        extensionAttribute10: String
+        extensionAttribute11: String
+        extensionAttribute12: String
+        extensionAttribute13: String
+        extensionAttribute14: String
+        extensionAttribute15: String
+        extensionAttribute2: String
+        extensionAttribute3: String
+        extensionAttribute4: String
+        extensionAttribute5: String
+        extensionAttribute6: String
+        extensionAttribute7: String
+        extensionAttribute8: String
+        extensionAttribute9: String
+    microsoft.graph.onPremisesProvisioningError:
+      value:
+        category: String
+        occurredDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        propertyCausingError: String
+        value: String
+    microsoft.graph.openShiftItem:
+      value:
+        openSlotCount: '0'
+    microsoft.graph.operatingSystemSpecifications:
+      value:
+        operatingSystemPlatform: String
+        operatingSystemVersion: String
+    microsoft.graph.operationError:
+      value:
+        code: String
+        message: String
+    microsoft.graph.outlookGeoCoordinates:
+      value:
+        accuracy: '0'
+        altitude: '0'
+        altitudeAccuracy: '0'
+        latitude: '0'
+        longitude: '0'
+    microsoft.graph.outOfOfficeSettings:
+      value:
+        isOutOfOffice: 'true'
+        message: String
+    microsoft.graph.package:
+      value:
+        type: String
+    microsoft.graph.pageLinks:
+      value:
+        oneNoteClientUrl:
+          '@odata.type': microsoft.graph.externalLink
+        oneNoteWebUrl:
+          '@odata.type': microsoft.graph.externalLink
+    microsoft.graph.passwordProfile:
+      value:
+        forceChangePasswordNextSignIn: 'true'
+        forceChangePasswordNextSignInWithMfa: 'true'
+        password: String
+    microsoft.graph.patternedRecurrence:
+      value:
+        pattern:
+          '@odata.type': microsoft.graph.recurrencePattern
+        range:
+          '@odata.type': microsoft.graph.recurrenceRange
+    microsoft.graph.pendingContentUpdate:
+      value:
+        queuedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.pendingOperations:
+      value:
+        pendingContentUpdate:
+          '@odata.type': microsoft.graph.pendingContentUpdate
+    microsoft.graph.personOrGroupColumn:
+      value:
+        allowMultipleSelection: 'true'
+        chooseFromType: String
+        displayAs: String
+    microsoft.graph.personType:
+      value:
+        class: String
+        subclass: String
+    microsoft.graph.phone:
+      value:
+        language: String
+        number: String
+        region: String
+        type:
+          '@odata.type': microsoft.graph.phoneType
+    microsoft.graph.photo:
+      value:
+        cameraMake: String
+        cameraModel: String
+        exposureDenominator: '0'
+        exposureNumerator: '0'
+        fNumber: '0'
+        focalLength: '0'
+        iso: '0'
+        orientation: '0'
+        takenDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.physicalAddress:
+      value:
+        city: String
+        countryOrRegion: String
+        postalCode: String
+        state: String
+        street: String
+    microsoft.graph.plannerAppliedCategories:
+      value: {}
+    microsoft.graph.plannerAssignments:
+      value: {}
+    microsoft.graph.plannerCategoryDescriptions:
+      value:
+        category1: String
+        category10: String
+        category11: String
+        category12: String
+        category13: String
+        category14: String
+        category15: String
+        category16: String
+        category17: String
+        category18: String
+        category19: String
+        category2: String
+        category20: String
+        category21: String
+        category22: String
+        category23: String
+        category24: String
+        category25: String
+        category3: String
+        category4: String
+        category5: String
+        category6: String
+        category7: String
+        category8: String
+        category9: String
+    microsoft.graph.plannerChecklistItems:
+      value: {}
+    microsoft.graph.plannerExternalReferences:
+      value: {}
+    microsoft.graph.plannerOrderHintsByAssignee:
+      value: {}
+    microsoft.graph.plannerPlanContainer:
+      value:
+        containerId: String
+        type:
+          '@odata.type': microsoft.graph.plannerContainerType
+        url: String
+    microsoft.graph.plannerUserIds:
+      value: {}
+    microsoft.graph.policyLocation:
+      value:
+        value: String
+    microsoft.graph.presenceStatusMessage:
+      value:
+        expiryDateTime:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        message:
+          '@odata.type': microsoft.graph.itemBody
+        publishedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.printerCapabilities:
+      value:
+        bottomMargins:
+        - '0'
+        collation: 'true'
+        colorModes:
+        - '@odata.type': microsoft.graph.printColorMode
+        contentTypes:
+        - String
+        copiesPerJob:
+          '@odata.type': microsoft.graph.integerRange
+        dpis:
+        - '0'
+        duplexModes:
+        - '@odata.type': microsoft.graph.printDuplexMode
+        feedOrientations:
+        - '@odata.type': microsoft.graph.printerFeedOrientation
+        finishings:
+        - '@odata.type': microsoft.graph.printFinishing
+        inputBins:
+        - String
+        isColorPrintingSupported: 'true'
+        isPageRangeSupported: 'true'
+        leftMargins:
+        - '0'
+        mediaColors:
+        - String
+        mediaSizes:
+        - String
+        mediaTypes:
+        - String
+        multipageLayouts:
+        - '@odata.type': microsoft.graph.printMultipageLayout
+        orientations:
+        - '@odata.type': microsoft.graph.printOrientation
+        outputBins:
+        - String
+        pagesPerSheet:
+        - '0'
+        qualities:
+        - '@odata.type': microsoft.graph.printQuality
+        rightMargins:
+        - '0'
+        scalings:
+        - '@odata.type': microsoft.graph.printScaling
+        supportsFitPdfToPage: 'true'
+        topMargins:
+        - '0'
+    microsoft.graph.printerDefaults:
+      value:
+        colorMode:
+          '@odata.type': microsoft.graph.printColorMode
+        contentType: String
+        copiesPerJob: '0'
+        dpi: '0'
+        duplexMode:
+          '@odata.type': microsoft.graph.printDuplexMode
+        finishings:
+        - '@odata.type': microsoft.graph.printFinishing
+        fitPdfToPage: 'true'
+        inputBin: String
+        mediaColor: String
+        mediaSize: String
+        mediaType: String
+        multipageLayout:
+          '@odata.type': microsoft.graph.printMultipageLayout
+        orientation:
+          '@odata.type': microsoft.graph.printOrientation
+        outputBin: String
+        pagesPerSheet: '0'
+        quality:
+          '@odata.type': microsoft.graph.printQuality
+        scaling:
+          '@odata.type': microsoft.graph.printScaling
+    microsoft.graph.printerLocation:
+      value:
+        altitudeInMeters: '0'
+        building: String
+        city: String
+        countryOrRegion: String
+        floor: String
+        floorDescription: String
+        latitude: '0'
+        longitude: '0'
+        organization:
+        - String
+        postalCode: String
+        roomDescription: String
+        roomName: String
+        site: String
+        stateOrProvince: String
+        streetAddress: String
+        subdivision:
+        - String
+        subunit:
+        - String
+    microsoft.graph.printerShareViewpoint:
+      value:
+        lastUsedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.printerStatus:
+      value:
+        description: String
+        details:
+        - '@odata.type': microsoft.graph.printerProcessingStateDetail
+        state:
+          '@odata.type': microsoft.graph.printerProcessingState
+    microsoft.graph.printJobConfiguration:
+      value:
+        collate: 'true'
+        colorMode:
+          '@odata.type': microsoft.graph.printColorMode
+        copies: '0'
+        dpi: '0'
+        duplexMode:
+          '@odata.type': microsoft.graph.printDuplexMode
+        feedOrientation:
+          '@odata.type': microsoft.graph.printerFeedOrientation
+        finishings:
+        - '@odata.type': microsoft.graph.printFinishing
+        fitPdfToPage: 'true'
+        inputBin: String
+        margin:
+          '@odata.type': microsoft.graph.printMargin
+        mediaSize: String
+        mediaType: String
+        multipageLayout:
+          '@odata.type': microsoft.graph.printMultipageLayout
+        orientation:
+          '@odata.type': microsoft.graph.printOrientation
+        outputBin: String
+        pageRanges:
+        - '@odata.type': microsoft.graph.integerRange
+        pagesPerSheet: '0'
+        quality:
+          '@odata.type': microsoft.graph.printQuality
+        scaling:
+          '@odata.type': microsoft.graph.printScaling
+    microsoft.graph.printJobStatus:
+      value:
+        description: String
+        details:
+        - '@odata.type': microsoft.graph.printJobStateDetail
+        isAcquiredByPrinter: 'true'
+        state:
+          '@odata.type': microsoft.graph.printJobProcessingState
+    microsoft.graph.printMargin:
+      value:
+        bottom: '0'
+        left: '0'
+        right: '0'
+        top: '0'
+    microsoft.graph.printTaskStatus:
+      value:
+        description: String
+        state:
+          '@odata.type': microsoft.graph.printTaskProcessingState
+    microsoft.graph.processContentMetadataBase:
+      value:
+        content:
+          '@odata.type': microsoft.graph.contentBase
+        correlationId: String
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        identifier: String
+        isTruncated: 'true'
+        length: '0'
+        modifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        name: String
+        sequenceNumber: '0'
+    microsoft.graph.processContentRequest:
+      value:
+        activityMetadata:
+          '@odata.type': microsoft.graph.activityMetadata
+        contentEntries:
+        - '@odata.type': microsoft.graph.processContentMetadataBase
+        deviceMetadata:
+          '@odata.type': microsoft.graph.deviceMetadata
+        integratedAppMetadata:
+          '@odata.type': microsoft.graph.integratedApplicationMetadata
+        protectedAppMetadata:
+          '@odata.type': microsoft.graph.protectedApplicationMetadata
+    microsoft.graph.protectedApplicationMetadata:
+      value:
+        applicationLocation:
+          '@odata.type': microsoft.graph.policyLocation
+    microsoft.graph.provisionedPlan:
+      value:
+        capabilityStatus: String
+        provisioningStatus: String
+        service: String
+    microsoft.graph.publicationFacet:
+      value:
+        checkedOutBy:
+          '@odata.type': microsoft.graph.identitySet
+        level: String
+        versionId: String
+    microsoft.graph.publicError:
+      value:
+        code: String
+        details:
+        - '@odata.type': microsoft.graph.publicErrorDetail
+        innerError:
+          '@odata.type': microsoft.graph.publicInnerError
+        message: String
+        target: String
+    microsoft.graph.publicErrorDetail:
+      value:
+        code: String
+        message: String
+        target: String
+    microsoft.graph.publicInnerError:
+      value:
+        code: String
+        details:
+        - '@odata.type': microsoft.graph.publicErrorDetail
+        message: String
+        target: String
+    microsoft.graph.quota:
+      value:
+        deleted: '0'
+        remaining: '0'
+        state: String
+        storagePlanInformation:
+          '@odata.type': microsoft.graph.storagePlanInformation
+        total: '0'
+        used: '0'
+    microsoft.graph.reactionsFacet:
+      value:
+        commentCount: '0'
+        likeCount: '0'
+        shareCount: '0'
+    microsoft.graph.recipient:
+      value:
+        emailAddress:
+          '@odata.type': microsoft.graph.emailAddress
+    microsoft.graph.recurrencePattern:
+      value:
+        dayOfMonth: '0'
+        daysOfWeek:
+        - '@odata.type': microsoft.graph.dayOfWeek
+        firstDayOfWeek:
+          '@odata.type': microsoft.graph.dayOfWeek
+        index:
+          '@odata.type': microsoft.graph.weekIndex
+        interval: '0'
+        month: '0'
+        type:
+          '@odata.type': microsoft.graph.recurrencePatternType
+    microsoft.graph.recurrenceRange:
+      value:
+        endDate: '0001-01-01'
+        numberOfOccurrences: '0'
+        recurrenceTimeZone: String
+        startDate: '0001-01-01'
+        type:
+          '@odata.type': microsoft.graph.recurrenceRangeType
+    microsoft.graph.recycleBinSettings:
+      value:
+        retentionPeriodOverrideDays: '0'
+    microsoft.graph.remoteItem:
+      value:
+        createdBy:
+          '@odata.type': microsoft.graph.identitySet
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        file:
+          '@odata.type': microsoft.graph.file
+        fileSystemInfo:
+          '@odata.type': microsoft.graph.fileSystemInfo
+        folder:
+          '@odata.type': microsoft.graph.folder
+        id: String
+        image:
+          '@odata.type': microsoft.graph.image
+        lastModifiedBy:
+          '@odata.type': microsoft.graph.identitySet
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        name: String
+        package:
+          '@odata.type': microsoft.graph.package
+        parentReference:
+          '@odata.type': microsoft.graph.itemReference
+        shared:
+          '@odata.type': microsoft.graph.shared
+        sharepointIds:
+          '@odata.type': microsoft.graph.sharepointIds
+        size: '0'
+        specialFolder:
+          '@odata.type': microsoft.graph.specialFolder
+        video:
+          '@odata.type': microsoft.graph.video
+        webDavUrl: String
+        webUrl: String
+    microsoft.graph.resourceReference:
+      value:
+        id: String
+        type: String
+        webUrl: String
+    microsoft.graph.resourceVisualization:
+      value:
+        containerDisplayName: String
+        containerType: String
+        containerWebUrl: String
+        mediaType: String
+        previewImageUrl: String
+        previewText: String
+        title: String
+        type: String
+    microsoft.graph.responseStatus:
+      value:
+        response:
+          '@odata.type': microsoft.graph.responseType
+        time: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.retentionLabelSettings:
+      value:
+        behaviorDuringRetentionPeriod:
+          '@odata.type': microsoft.graph.security.behaviorDuringRetentionPeriod
+        isContentUpdateAllowed: 'true'
+        isDeleteAllowed: 'true'
+        isLabelUpdateAllowed: 'true'
+        isMetadataUpdateAllowed: 'true'
+        isRecordLocked: 'true'
+    microsoft.graph.root:
+      value: {}
+    microsoft.graph.scheduleEntity:
+      value:
+        endDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        startDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        theme:
+          '@odata.type': microsoft.graph.scheduleEntityTheme
+    microsoft.graph.scoredEmailAddress:
+      value:
+        address: String
+        itemId: String
+        relevanceScore: '0'
+        selectionLikelihood:
+          '@odata.type': microsoft.graph.selectionLikelihoodInfo
+    microsoft.graph.searchResult:
+      value:
+        onClickTelemetryUrl: String
+    microsoft.graph.sectionLinks:
+      value:
+        oneNoteClientUrl:
+          '@odata.type': microsoft.graph.externalLink
+        oneNoteWebUrl:
+          '@odata.type': microsoft.graph.externalLink
+    microsoft.graph.serverProcessedContent:
+      value:
+        htmlStrings:
+        - '@odata.type': microsoft.graph.metaDataKeyStringPair
+        imageSources:
+        - '@odata.type': microsoft.graph.metaDataKeyStringPair
+        links:
+        - '@odata.type': microsoft.graph.metaDataKeyStringPair
+        searchablePlainTexts:
+        - '@odata.type': microsoft.graph.metaDataKeyStringPair
+    microsoft.graph.servicePlanInfo:
+      value:
+        appliesTo: String
+        provisioningStatus: String
+        servicePlanId: 00000000-0000-0000-0000-000000000000
+        servicePlanName: String
+    microsoft.graph.serviceProvisioningError:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        isResolved: 'true'
+        serviceInstance: String
+    microsoft.graph.settingSource:
+      value:
+        displayName: String
+        id: String
+        sourceType:
+          '@odata.type': microsoft.graph.settingSourceType
+    microsoft.graph.settingValue:
+      value:
+        name: String
+        value: String
+    microsoft.graph.shared:
+      value:
+        owner:
+          '@odata.type': microsoft.graph.identitySet
+        scope: String
+        sharedBy:
+          '@odata.type': microsoft.graph.identitySet
+        sharedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.sharePointGroupIdentity:
+      value:
+        principalId: String
+        title: String
+    microsoft.graph.sharePointIdentity:
+      value:
+        loginName: String
+    microsoft.graph.sharePointIdentitySet:
+      value:
+        group:
+          '@odata.type': microsoft.graph.identity
+        sharePointGroup:
+          '@odata.type': microsoft.graph.sharePointGroupIdentity
+        siteGroup:
+          '@odata.type': microsoft.graph.sharePointIdentity
+        siteUser:
+          '@odata.type': microsoft.graph.sharePointIdentity
+    microsoft.graph.sharepointIds:
+      value:
+        listId: String
+        listItemId: String
+        listItemUniqueId: String
+        siteId: String
+        siteUrl: String
+        tenantId: String
+        webId: String
+    microsoft.graph.sharingDetail:
+      value:
+        sharedBy:
+          '@odata.type': microsoft.graph.insightIdentity
+        sharedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        sharingReference:
+          '@odata.type': microsoft.graph.resourceReference
+        sharingSubject: String
+        sharingType: String
+    microsoft.graph.sharingInvitation:
+      value:
+        email: String
+        invitedBy:
+          '@odata.type': microsoft.graph.identitySet
+        redeemedBy: String
+        signInRequired: 'true'
+    microsoft.graph.sharingLink:
+      value:
+        application:
+          '@odata.type': microsoft.graph.identity
+        preventsDownload: 'true'
+        scope: String
+        type: String
+        webHtml: String
+        webUrl: String
+    microsoft.graph.shiftActivity:
+      value:
+        code: String
+        displayName: String
+        endDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        isPaid: 'true'
+        startDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        theme:
+          '@odata.type': microsoft.graph.scheduleEntityTheme
+    microsoft.graph.shiftAvailability:
+      value:
+        recurrence:
+          '@odata.type': microsoft.graph.patternedRecurrence
+        timeSlots:
+        - '@odata.type': microsoft.graph.timeRange
+        timeZone: String
+    microsoft.graph.shiftItem:
+      value:
+        activities:
+        - '@odata.type': microsoft.graph.shiftActivity
+        displayName: String
+        notes: String
+    microsoft.graph.signInActivity:
+      value:
+        lastNonInteractiveSignInDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastNonInteractiveSignInRequestId: String
+        lastSignInDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastSignInRequestId: String
+        lastSuccessfulSignInDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastSuccessfulSignInRequestId: String
+    microsoft.graph.siteArchivalDetails:
+      value:
+        archiveStatus:
+          '@odata.type': microsoft.graph.siteArchiveStatus
+    microsoft.graph.siteCollection:
+      value:
+        archivalDetails:
+          '@odata.type': microsoft.graph.siteArchivalDetails
+        dataLocationCode: String
+        hostname: String
+        root:
+          '@odata.type': microsoft.graph.root
+    microsoft.graph.sizeRange:
+      value:
+        maximumSize: '0'
+        minimumSize: '0'
+    microsoft.graph.specialFolder:
+      value:
+        name: String
+    microsoft.graph.storagePlanInformation:
+      value:
+        upgradeAvailable: 'true'
+    microsoft.graph.systemFacet:
+      value: {}
+    microsoft.graph.teamFunSettings:
+      value:
+        allowCustomMemes: 'true'
+        allowGiphy: 'true'
+        allowStickersAndMemes: 'true'
+        giphyContentRating:
+          '@odata.type': microsoft.graph.giphyRatingType
+    microsoft.graph.teamGuestSettings:
+      value:
+        allowCreateUpdateChannels: 'true'
+        allowDeleteChannels: 'true'
+    microsoft.graph.teamMemberSettings:
+      value:
+        allowAddRemoveApps: 'true'
+        allowCreatePrivateChannels: 'true'
+        allowCreateUpdateChannels: 'true'
+        allowCreateUpdateRemoveConnectors: 'true'
+        allowCreateUpdateRemoveTabs: 'true'
+        allowDeleteChannels: 'true'
+    microsoft.graph.teamMessagingSettings:
+      value:
+        allowChannelMentions: 'true'
+        allowOwnerDeleteMessages: 'true'
+        allowTeamMentions: 'true'
+        allowUserDeleteMessages: 'true'
+        allowUserEditMessages: 'true'
+    microsoft.graph.teamsAppAuthorization:
+      value:
+        clientAppId: String
+        requiredPermissionSet:
+          '@odata.type': microsoft.graph.teamsAppPermissionSet
+    microsoft.graph.teamsAppPermissionSet:
+      value:
+        resourceSpecificPermissions:
+        - '@odata.type': microsoft.graph.teamsAppResourceSpecificPermission
+    microsoft.graph.teamsAppResourceSpecificPermission:
+      value:
+        permissionType:
+          '@odata.type': microsoft.graph.teamsAppResourceSpecificPermissionType
+        permissionValue: String
+    microsoft.graph.teamsTabConfiguration:
+      value:
+        contentUrl: String
+        entityId: String
+        removeUrl: String
+        websiteUrl: String
+    microsoft.graph.teamSummary:
+      value:
+        guestsCount: '0'
+        membersCount: '0'
+        ownersCount: '0'
+    microsoft.graph.teamworkConversationIdentity:
+      value:
+        conversationIdentityType:
+          '@odata.type': microsoft.graph.teamworkConversationIdentityType
+    microsoft.graph.teamworkOnlineMeetingInfo:
+      value:
+        calendarEventId: String
+        joinWebUrl: String
+        organizer:
+          '@odata.type': microsoft.graph.teamworkUserIdentity
+    microsoft.graph.teamworkUserIdentity:
+      value:
+        userIdentityType:
+          '@odata.type': microsoft.graph.teamworkUserIdentityType
+    microsoft.graph.termColumn:
+      value:
+        allowMultipleValues: 'true'
+        parentTerm:
+          '@odata.type': microsoft.graph.termStore.term
+        showFullyQualifiedName: 'true'
+        termSet:
+          '@odata.type': microsoft.graph.termStore.set
+    microsoft.graph.textColumn:
+      value:
+        allowMultipleLines: 'true'
+        appendChangesToExistingText: 'true'
+        linesForEditing: '0'
+        maxLength: '0'
+        textType: String
+    microsoft.graph.thumbnail:
+      value:
+        content: Stream
+        height: '0'
+        sourceItemId: String
+        url: String
+        width: '0'
+    microsoft.graph.thumbnailColumn:
+      value: {}
+    microsoft.graph.timeCardBreak:
+      value:
+        breakId: String
+        end:
+          '@odata.type': microsoft.graph.timeCardEvent
+        notes:
+          '@odata.type': microsoft.graph.itemBody
+        start:
+          '@odata.type': microsoft.graph.timeCardEvent
+    microsoft.graph.timeCardEntry:
+      value:
+        breaks:
+        - '@odata.type': microsoft.graph.timeCardBreak
+        clockInEvent:
+          '@odata.type': microsoft.graph.timeCardEvent
+        clockOutEvent:
+          '@odata.type': microsoft.graph.timeCardEvent
+    microsoft.graph.timeCardEvent:
+      value:
+        dateTime: '0001-01-01T00:00:00.0000000+00:00'
+        isAtApprovedLocation: 'true'
+        notes:
+          '@odata.type': microsoft.graph.itemBody
+    microsoft.graph.timeClockSettings:
+      value:
+        approvedLocation:
+          '@odata.type': microsoft.graph.geoCoordinates
+    microsoft.graph.timeOffDetails:
+      value:
+        isAllDay: 'true'
+        subject: String
+    microsoft.graph.timeOffItem:
+      value:
+        timeOffReasonId: String
+    microsoft.graph.timeRange:
+      value:
+        endTime: TimeOfDay (timestamp)
+        startTime: TimeOfDay (timestamp)
+    microsoft.graph.timeSlot:
+      value:
+        end:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+        start:
+          '@odata.type': microsoft.graph.dateTimeTimeZone
+    microsoft.graph.timeZoneBase:
+      value:
+        name: String
+    microsoft.graph.titleArea:
+      value:
+        alternativeText: String
+        enableGradientEffect: 'true'
+        imageWebUrl: String
+        layout:
+          '@odata.type': microsoft.graph.titleAreaLayoutType
+        serverProcessedContent:
+          '@odata.type': microsoft.graph.serverProcessedContent
+        showAuthor: 'true'
+        showPublishedDate: 'true'
+        showTextBlockAboveTitle: 'true'
+        textAboveTitle: String
+        textAlignment:
+          '@odata.type': microsoft.graph.titleAreaTextAlignmentType
+    microsoft.graph.usageDetails:
+      value:
+        lastAccessedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.userIdentity:
+      value:
+        ipAddress: String
+        userPrincipalName: String
+    microsoft.graph.userPrint:
+      value:
+        recentPrinterShares:
+        - '@odata.type': microsoft.graph.printerShare
+    microsoft.graph.userWorkLocation:
+      value:
+        placeId: String
+        source:
+          '@odata.type': microsoft.graph.workLocationSource
+        workLocationType:
+          '@odata.type': microsoft.graph.workLocationType
+    microsoft.graph.video:
+      value:
+        audioBitsPerSample: '0'
+        audioChannels: '0'
+        audioFormat: String
+        audioSamplesPerSecond: '0'
+        bitrate: '0'
+        duration: '0'
+        fourCC: String
+        frameRate: '0'
+        height: '0'
+        width: '0'
+    microsoft.graph.virtualEventExternalInformation:
+      value:
+        applicationId: String
+        externalEventId: String
+    microsoft.graph.virtualEventExternalRegistrationInformation:
+      value:
+        referrer: String
+        registrationId: String
+    microsoft.graph.visualInfo:
+      value:
+        attribution:
+          '@odata.type': microsoft.graph.imageInfo
+        backgroundColor: String
+        content:
+          '@odata.type': microsoft.graph.Json
+        description: String
+        displayText: String
+    microsoft.graph.watermarkProtectionValues:
+      value:
+        isEnabledForContentSharing: 'true'
+        isEnabledForVideo: 'true'
+    microsoft.graph.webauthnAuthenticationExtensionsClientOutputs:
+      value: {}
+    microsoft.graph.webauthnAuthenticatorAttestationResponse:
+      value:
+        attestationObject: String
+        clientDataJSON: String
+    microsoft.graph.webauthnPublicKeyCredential:
+      value:
+        clientExtensionResults:
+          '@odata.type': microsoft.graph.webauthnAuthenticationExtensionsClientOutputs
+        id: String
+        response:
+          '@odata.type': microsoft.graph.webauthnAuthenticatorAttestationResponse
+    microsoft.graph.website:
+      value:
+        address: String
+        displayName: String
+        type:
+          '@odata.type': microsoft.graph.websiteType
+    microsoft.graph.workbookFilterCriteria:
+      value:
+        color: String
+        criterion1: String
+        criterion2: String
+        dynamicCriteria: String
+        filterOn: String
+        icon:
+          '@odata.type': microsoft.graph.workbookIcon
+        operator: String
+        values:
+          '@odata.type': microsoft.graph.Json
+    microsoft.graph.workbookIcon:
+      value:
+        index: '0'
+        set: String
+    microsoft.graph.workbookOperationError:
+      value:
+        code: String
+        innerError:
+          '@odata.type': microsoft.graph.workbookOperationError
+        message: String
+    microsoft.graph.workbookSortField:
+      value:
+        ascending: 'true'
+        color: String
+        dataOption: String
+        icon:
+          '@odata.type': microsoft.graph.workbookIcon
+        key: '0'
+        sortOn: String
+    microsoft.graph.workbookWorksheetProtectionOptions:
+      value:
+        allowAutoFilter: 'true'
+        allowDeleteColumns: 'true'
+        allowDeleteRows: 'true'
+        allowFormatCells: 'true'
+        allowFormatColumns: 'true'
+        allowFormatRows: 'true'
+        allowInsertColumns: 'true'
+        allowInsertHyperlinks: 'true'
+        allowInsertRows: 'true'
+        allowPivotTables: 'true'
+        allowSort: 'true'
+    microsoft.graph.workingHours:
+      value:
+        daysOfWeek:
+        - '@odata.type': microsoft.graph.dayOfWeek
+        endTime: TimeOfDay (timestamp)
+        startTime: TimeOfDay (timestamp)
+        timeZone:
+          '@odata.type': microsoft.graph.timeZoneBase
+    microsoft.graph.termStore.group:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        description: String
+        displayName: String
+        parentSiteId: String
+        scope:
+          '@odata.type': microsoft.graph.termStore.termGroupScope
+        sets:
+        - '@odata.type': microsoft.graph.termStore.set
+    microsoft.graph.termStore.relation:
+      value:
+        fromTerm:
+          '@odata.type': microsoft.graph.termStore.term
+        relationship:
+          '@odata.type': microsoft.graph.termStore.relationType
+        set:
+          '@odata.type': microsoft.graph.termStore.set
+        toTerm:
+          '@odata.type': microsoft.graph.termStore.term
+    microsoft.graph.termStore.set:
+      value:
+        children:
+        - '@odata.type': microsoft.graph.termStore.term
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        description: String
+        localizedNames:
+        - '@odata.type': microsoft.graph.termStore.localizedName
+        parentGroup:
+          '@odata.type': microsoft.graph.termStore.group
+        properties:
+        - '@odata.type': microsoft.graph.keyValue
+        relations:
+        - '@odata.type': microsoft.graph.termStore.relation
+        terms:
+        - '@odata.type': microsoft.graph.termStore.term
+    microsoft.graph.termStore.store:
+      value:
+        defaultLanguageTag: String
+        groups:
+        - '@odata.type': microsoft.graph.termStore.group
+        languageTags:
+        - String
+        sets:
+        - '@odata.type': microsoft.graph.termStore.set
+    microsoft.graph.termStore.term:
+      value:
+        children:
+        - '@odata.type': microsoft.graph.termStore.term
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        descriptions:
+        - '@odata.type': microsoft.graph.termStore.localizedDescription
+        labels:
+        - '@odata.type': microsoft.graph.termStore.localizedLabel
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        properties:
+        - '@odata.type': microsoft.graph.keyValue
+        relations:
+        - '@odata.type': microsoft.graph.termStore.relation
+        set:
+          '@odata.type': microsoft.graph.termStore.set
+    microsoft.graph.termStore.localizedDescription:
+      value:
+        description: String
+        languageTag: String
+    microsoft.graph.termStore.localizedLabel:
+      value:
+        isDefault: 'true'
+        languageTag: String
+        name: String
+    microsoft.graph.termStore.localizedName:
+      value:
+        languageTag: String
+        name: String
   securitySchemes:
     azureOAuth2:
       type: oauth2

@@ -470,6 +470,59 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/microsoft.graph.ODataErrors.ODataError'
+  examples:
+    microsoft.graph.entity:
+      value:
+        id: String (identifier)
+    microsoft.graph.sharepoint:
+      value:
+        settings:
+          '@odata.type': microsoft.graph.sharepointSettings
+    microsoft.graph.sharepointSettings:
+      value:
+        allowedDomainGuidsForSyncApp:
+        - 00000000-0000-0000-0000-000000000000
+        availableManagedPathsForSiteCreation:
+        - String
+        deletedUserPersonalSiteRetentionPeriodInDays: '0'
+        excludedFileExtensionsForSyncApp:
+        - String
+        idleSessionSignOut:
+          '@odata.type': microsoft.graph.idleSessionSignOut
+        imageTaggingOption:
+          '@odata.type': microsoft.graph.imageTaggingChoice
+        isCommentingOnSitePagesEnabled: 'true'
+        isFileActivityNotificationEnabled: 'true'
+        isLegacyAuthProtocolsEnabled: 'true'
+        isLoopEnabled: 'true'
+        isMacSyncAppEnabled: 'true'
+        isRequireAcceptingUserToMatchInvitedUserEnabled: 'true'
+        isResharingByExternalUsersEnabled: 'true'
+        isSharePointMobileNotificationEnabled: 'true'
+        isSharePointNewsfeedEnabled: 'true'
+        isSiteCreationEnabled: 'true'
+        isSiteCreationUIEnabled: 'true'
+        isSitePagesCreationEnabled: 'true'
+        isSitesStorageLimitAutomatic: 'true'
+        isSyncButtonHiddenOnPersonalSite: 'true'
+        isUnmanagedSyncAppForTenantRestricted: 'true'
+        personalSiteDefaultStorageLimitInMB: '0'
+        sharingAllowedDomainList:
+        - String
+        sharingBlockedDomainList:
+        - String
+        sharingCapability:
+          '@odata.type': microsoft.graph.sharingCapabilities
+        sharingDomainRestrictionMode:
+          '@odata.type': microsoft.graph.sharingDomainRestrictionMode
+        siteCreationDefaultManagedPath: String
+        siteCreationDefaultStorageLimitInMB: '0'
+        tenantDefaultTimezone: String
+    microsoft.graph.idleSessionSignOut:
+      value:
+        isEnabled: 'true'
+        signOutAfterInSeconds: '0'
+        warnAfterInSeconds: '0'
   securitySchemes:
     azureOAuth2:
       type: oauth2

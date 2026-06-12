@@ -10074,6 +10074,199 @@ components:
       explode: false
       schema:
         type: string
+  examples:
+    microsoft.graph.entity:
+      value:
+        id: String (identifier)
+    microsoft.graph.notebook:
+      value:
+        isDefault: 'true'
+        isShared: 'true'
+        links:
+          '@odata.type': microsoft.graph.notebookLinks
+        sectionGroups:
+        - '@odata.type': microsoft.graph.sectionGroup
+        sectionGroupsUrl: String
+        sections:
+        - '@odata.type': microsoft.graph.onenoteSection
+        sectionsUrl: String
+        userRole:
+          '@odata.type': microsoft.graph.onenoteUserRole
+    microsoft.graph.onenote:
+      value:
+        notebooks:
+        - '@odata.type': microsoft.graph.notebook
+        operations:
+        - '@odata.type': microsoft.graph.onenoteOperation
+        pages:
+        - '@odata.type': microsoft.graph.onenotePage
+        resources:
+        - '@odata.type': microsoft.graph.onenoteResource
+        sectionGroups:
+        - '@odata.type': microsoft.graph.sectionGroup
+        sections:
+        - '@odata.type': microsoft.graph.onenoteSection
+    microsoft.graph.onenoteEntityBaseModel:
+      value:
+        self: String
+    microsoft.graph.onenoteEntityHierarchyModel:
+      value:
+        createdBy:
+          '@odata.type': microsoft.graph.identitySet
+        displayName: String
+        lastModifiedBy:
+          '@odata.type': microsoft.graph.identitySet
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.onenoteEntitySchemaObjectModel:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.onenoteOperation:
+      value:
+        error:
+          '@odata.type': microsoft.graph.onenoteOperationError
+        percentComplete: String
+        resourceId: String
+        resourceLocation: String
+    microsoft.graph.onenotePage:
+      value:
+        content: Stream
+        contentUrl: String
+        createdByAppId: String
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        level: '0'
+        links:
+          '@odata.type': microsoft.graph.pageLinks
+        order: '0'
+        parentNotebook:
+          '@odata.type': microsoft.graph.notebook
+        parentSection:
+          '@odata.type': microsoft.graph.onenoteSection
+        title: String
+        userTags:
+        - String
+    microsoft.graph.onenoteResource:
+      value:
+        content: Stream
+        contentUrl: String
+    microsoft.graph.onenoteSection:
+      value:
+        isDefault: 'true'
+        links:
+          '@odata.type': microsoft.graph.sectionLinks
+        pages:
+        - '@odata.type': microsoft.graph.onenotePage
+        pagesUrl: String
+        parentNotebook:
+          '@odata.type': microsoft.graph.notebook
+        parentSectionGroup:
+          '@odata.type': microsoft.graph.sectionGroup
+    microsoft.graph.operation:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        lastActionDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        status:
+          '@odata.type': microsoft.graph.operationStatus
+    microsoft.graph.sectionGroup:
+      value:
+        parentNotebook:
+          '@odata.type': microsoft.graph.notebook
+        parentSectionGroup:
+          '@odata.type': microsoft.graph.sectionGroup
+        sectionGroups:
+        - '@odata.type': microsoft.graph.sectionGroup
+        sectionGroupsUrl: String
+        sections:
+        - '@odata.type': microsoft.graph.onenoteSection
+        sectionsUrl: String
+    microsoft.graph.CopyNotebookModel:
+      value:
+        createdBy: String
+        createdByIdentity:
+          '@odata.type': microsoft.graph.identitySet
+        createdTime: '0001-01-01T00:00:00.0000000+00:00'
+        id: String
+        isDefault: 'true'
+        isShared: 'true'
+        lastModifiedBy: String
+        lastModifiedByIdentity:
+          '@odata.type': microsoft.graph.identitySet
+        lastModifiedTime: '0001-01-01T00:00:00.0000000+00:00'
+        links:
+          '@odata.type': microsoft.graph.notebookLinks
+        name: String
+        sectionGroupsUrl: String
+        sectionsUrl: String
+        self: String
+        userRole:
+          '@odata.type': microsoft.graph.onenoteUserRole
+    microsoft.graph.externalLink:
+      value:
+        href: String
+    microsoft.graph.identity:
+      value:
+        displayName: String
+        id: String
+    microsoft.graph.identitySet:
+      value:
+        application:
+          '@odata.type': microsoft.graph.identity
+        device:
+          '@odata.type': microsoft.graph.identity
+        user:
+          '@odata.type': microsoft.graph.identity
+    microsoft.graph.notebookLinks:
+      value:
+        oneNoteClientUrl:
+          '@odata.type': microsoft.graph.externalLink
+        oneNoteWebUrl:
+          '@odata.type': microsoft.graph.externalLink
+    microsoft.graph.onenoteOperationError:
+      value:
+        code: String
+        message: String
+    microsoft.graph.onenotePagePreview:
+      value:
+        links:
+          '@odata.type': microsoft.graph.onenotePagePreviewLinks
+        previewText: String
+    microsoft.graph.onenotePagePreviewLinks:
+      value:
+        previewImageUrl:
+          '@odata.type': microsoft.graph.externalLink
+    microsoft.graph.onenotePatchContentCommand:
+      value:
+        action:
+          '@odata.type': microsoft.graph.onenotePatchActionType
+        content: String
+        position:
+          '@odata.type': microsoft.graph.onenotePatchInsertPosition
+        target: String
+    microsoft.graph.pageLinks:
+      value:
+        oneNoteClientUrl:
+          '@odata.type': microsoft.graph.externalLink
+        oneNoteWebUrl:
+          '@odata.type': microsoft.graph.externalLink
+    microsoft.graph.recentNotebook:
+      value:
+        displayName: String
+        lastAccessedTime: '0001-01-01T00:00:00.0000000+00:00'
+        links:
+          '@odata.type': microsoft.graph.recentNotebookLinks
+        sourceService:
+          '@odata.type': microsoft.graph.onenoteSourceService
+    microsoft.graph.recentNotebookLinks:
+      value:
+        oneNoteClientUrl:
+          '@odata.type': microsoft.graph.externalLink
+        oneNoteWebUrl:
+          '@odata.type': microsoft.graph.externalLink
+    microsoft.graph.sectionLinks:
+      value:
+        oneNoteClientUrl:
+          '@odata.type': microsoft.graph.externalLink
+        oneNoteWebUrl:
+          '@odata.type': microsoft.graph.externalLink
   securitySchemes:
     azureOAuth2:
       type: oauth2

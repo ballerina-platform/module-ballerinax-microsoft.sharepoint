@@ -40507,6 +40507,88 @@ components:
       explode: false
       schema:
         type: string
+  examples:
+    microsoft.graph.entity:
+      value:
+        id: String (identifier)
+    microsoft.graph.keyValue:
+      value:
+        key: String
+        value: String
+    microsoft.graph.termStore.group:
+      value:
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        description: String
+        displayName: String
+        parentSiteId: String
+        scope:
+          '@odata.type': microsoft.graph.termStore.termGroupScope
+        sets:
+        - '@odata.type': microsoft.graph.termStore.set
+    microsoft.graph.termStore.relation:
+      value:
+        fromTerm:
+          '@odata.type': microsoft.graph.termStore.term
+        relationship:
+          '@odata.type': microsoft.graph.termStore.relationType
+        set:
+          '@odata.type': microsoft.graph.termStore.set
+        toTerm:
+          '@odata.type': microsoft.graph.termStore.term
+    microsoft.graph.termStore.set:
+      value:
+        children:
+        - '@odata.type': microsoft.graph.termStore.term
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        description: String
+        localizedNames:
+        - '@odata.type': microsoft.graph.termStore.localizedName
+        parentGroup:
+          '@odata.type': microsoft.graph.termStore.group
+        properties:
+        - '@odata.type': microsoft.graph.keyValue
+        relations:
+        - '@odata.type': microsoft.graph.termStore.relation
+        terms:
+        - '@odata.type': microsoft.graph.termStore.term
+    microsoft.graph.termStore.store:
+      value:
+        defaultLanguageTag: String
+        groups:
+        - '@odata.type': microsoft.graph.termStore.group
+        languageTags:
+        - String
+        sets:
+        - '@odata.type': microsoft.graph.termStore.set
+    microsoft.graph.termStore.term:
+      value:
+        children:
+        - '@odata.type': microsoft.graph.termStore.term
+        createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        descriptions:
+        - '@odata.type': microsoft.graph.termStore.localizedDescription
+        labels:
+        - '@odata.type': microsoft.graph.termStore.localizedLabel
+        lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+        properties:
+        - '@odata.type': microsoft.graph.keyValue
+        relations:
+        - '@odata.type': microsoft.graph.termStore.relation
+        set:
+          '@odata.type': microsoft.graph.termStore.set
+    microsoft.graph.termStore.localizedDescription:
+      value:
+        description: String
+        languageTag: String
+    microsoft.graph.termStore.localizedLabel:
+      value:
+        isDefault: 'true'
+        languageTag: String
+        name: String
+    microsoft.graph.termStore.localizedName:
+      value:
+        languageTag: String
+        name: String
   securitySchemes:
     azureOAuth2:
       type: oauth2
